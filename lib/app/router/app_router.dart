@@ -3,15 +3,16 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/home/screens/home_screen.dart';
 import '../../features/question/screens/question_list_screen.dart';
-import '../../features/progress/screens/progress_screen.dart'; // ① 進捗画面をインポート（パスは実際の構成に合わせてください）
+import '../../features/progress/screens/progress_screen.dart';
+import '../../features/review/screens/review_screen.dart'; // ① 復習画面をインポート（※パスは実際の配置に合わせて調整してください）
 import '../shell/app_shell.dart';
 import 'routes.dart';
 
 const _pendingRoutes = [
   // Routes.question, // 問題は解除済み
-  Routes.review,
+  // Routes.review,   // ② ここから「復習」を外す
   Routes.vocab,
-  // Routes.progress, // ② ここから「進捗」を外す
+  // Routes.progress, // 進捗はすでに外れている
   Routes.settings,
 ];
 
@@ -30,10 +31,14 @@ final appRouter = GoRouter(
           path: Routes.question,
           builder: (context, state) => const QuestionListScreen(),
         ),
-        // ③ 「進捗」の個別ルートを追加
         GoRoute(
           path: Routes.progress,
           builder: (context, state) => const ProgressScreen(),
+        ),
+        // ③ 「復習」の個別ルートを追加
+        GoRoute(
+          path: Routes.review,
+          builder: (context, state) => const ReviewScreen(),
         ),
         for (final path in _pendingRoutes)
           GoRoute(
