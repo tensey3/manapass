@@ -38,7 +38,11 @@ dependencies:
   go_router: ^14.8.1
   google_fonts: ^6.2.1
   intl: ^0.20.2
+<<<<<<< HEAD
   image_picker: ^1.1.2
+=======
+  shared_preferences: ^2.5.6
+>>>>>>> d76229c7fea0f6a182126e03b22484013c86fc56
 
 dev_dependencies:
   flutter_test:
