@@ -5,13 +5,14 @@ import '../../features/home/screens/home_screen.dart';
 import '../../features/question/screens/question_list_screen.dart';
 import '../../features/progress/screens/progress_screen.dart';
 import '../../features/settings/settings_routes.dart';
+import '../../features/vocab/vocab_routes.dart';
 import '../shell/app_shell.dart';
 import 'routes.dart';
 
 const _pendingRoutes = [
   // Routes.question, // 問題は解除済み
   Routes.review, // 復習画面は未実装のため準備中
-  Routes.vocab,
+  // Routes.vocab, // 単語帳は vocabRoute で追加
   // Routes.progress, // 進捗はすでに外れている
   // Routes.settings, // 設定は settingsRoute で追加
 ];
@@ -36,6 +37,7 @@ final appRouter = GoRouter(
           builder: (context, state) => const ProgressScreen(),
         ),
         settingsRoute,
+        vocabRoute,
         for (final path in _pendingRoutes)
           GoRoute(
             path: path,
