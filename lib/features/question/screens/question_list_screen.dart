@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+import '../../../app/router/routes.dart';
 
 class QuestionListScreen extends StatefulWidget {
   const QuestionListScreen({super.key});
@@ -49,19 +52,25 @@ class _QuestionListScreenState extends State<QuestionListScreen>
                 _buildActionButton(
                   icon: Icons.close,
                   label: 'ランダムクイズ',
-                  onTap: () {},
+                  onTap: () {
+                    context.push(Routes.randomQuiz);
+                  },
                 ),
                 const SizedBox(width: 16),
                 _buildActionButton(
                   icon: Icons.timer,
                   label: '模擬試験',
-                  onTap: () {},
+                  onTap: () {
+                    context.push(Routes.mockExam); // ← 追加
+                  },
                 ),
                 const SizedBox(width: 16),
                 _buildActionButton(
                   icon: Icons.camera_alt,
                   label: '写真から追加',
-                  onTap: () {},
+                  onTap: () {
+                    context.push(Routes.addFromPhoto); // ← 遷移を追加
+                  },
                 ),
               ],
             ),
@@ -80,30 +89,84 @@ class _QuestionListScreenState extends State<QuestionListScreen>
                   ),
                 ),
                 Container(
-                  width: 250,
+                  width: 290, // ← ★ここを大きくすると横幅が広がります（お好みで320〜360などに調整してください）
                   height: 40,
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(8), // 外側の角の丸み
                   ),
-                  child: TabBar(
-                    controller: _tabController,
-                    indicator: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 4,
-                          offset: const Offset(0, 2),
+                  child: Row(
+                    children: [
+                      // 科目Aボタン
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _tabController.animateTo(0);
+                            });
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            margin: const EdgeInsets.all(3), // 白い部分と外側の隙間
+                            decoration: BoxDecoration(
+                              color: _tabController.index == 0 ? Colors.white : Colors.transparent,
+                              borderRadius: BorderRadius.circular(6), // 白い部分の角の丸み
+                              boxShadow: _tabController.index == 0
+                                  ? [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                                  : [],
+                            ),
+                            child: Text(
+                              '科目A',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: _tabController.index == 0 ? Colors.blue : Colors.grey[600],
+                              ),
+                            ),
+                          ),
                         ),
-                      ],
-                    ),
-                    labelColor: Colors.blue,
-                    unselectedLabelColor: Colors.grey[600],
-                    tabs: const [
-                      Tab(text: '科目A'),
-                      Tab(text: '科目B'),
+                      ),
+                      // 科目Bボタン
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _tabController.animateTo(1);
+                            });
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            margin: const EdgeInsets.all(3), // 白い部分と外側の隙間
+                            decoration: BoxDecoration(
+                              color: _tabController.index == 1 ? Colors.white : Colors.transparent,
+                              borderRadius: BorderRadius.circular(6), // 白い部分の角の丸み
+                              boxShadow: _tabController.index == 1
+                                  ? [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ]
+                                  : [],
+                            ),
+                            child: Text(
+                              '科目B',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: _tabController.index == 1 ? Colors.blue : Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),

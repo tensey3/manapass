@@ -3,14 +3,16 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/home/screens/home_screen.dart';
 import '../../features/question/screens/question_list_screen.dart';
-import '../../features/progress/screens/progress_screen.dart';
-import '../../features/review/screens/review_screen.dart'; // ① 復習画面をインポート（※パスは実際の配置に合わせて調整してください）
+import '../../features/question/screens/random_quiz_screen.dart'; // ← ランダムクイズ画面のインポートを追加
+import '../../features/question/screens/mock_exam_screen.dart';
+import '../../features/question/screens/photo_add_screen.dart';
+
 import '../shell/app_shell.dart';
 import 'routes.dart';
 
 const _pendingRoutes = [
   // Routes.question, // 問題は解除済み
-  // Routes.review,   // ② ここから「復習」を外す
+  Routes.review,
   Routes.vocab,
   // Routes.progress, // 進捗はすでに外れている
   Routes.settings,
@@ -32,13 +34,16 @@ final appRouter = GoRouter(
           builder: (context, state) => const QuestionListScreen(),
         ),
         GoRoute(
-          path: Routes.progress,
-          builder: (context, state) => const ProgressScreen(),
+          path: Routes.randomQuiz, // ← ランダムクイズ画面のルートを追加
+          builder: (context, state) => const RandomQuizScreen(),
         ),
-        // ③ 「復習」の個別ルートを追加
         GoRoute(
-          path: Routes.review,
-          builder: (context, state) => const ReviewScreen(),
+          path: Routes.mockExam, // ← ② この GoRoute を追加！
+          builder: (context, state) => const MockExamScreen(),
+        ),
+        GoRoute(
+          path: Routes.addFromPhoto,
+          builder: (context, state) => const AddFromPhotoScreen(), // ← 正しいクラス名に直す
         ),
         for (final path in _pendingRoutes)
           GoRoute(
