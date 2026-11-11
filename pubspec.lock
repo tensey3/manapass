@@ -97,7 +97,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-<<<<<<< HEAD
+  file:
+    dependency: transitive
+    description:
+      name: file
+      sha256: a3b4f84adafef897088c160faf7dfffb7696046cb13ae90b508c2cbc95d3b8d4
+      url: "https://pub.dev"
+    source: hosted
+    version: "7.0.1"
   file_selector_linux:
     dependency: transitive
     description:
@@ -130,16 +137,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.9.3+6"
-=======
-  file:
-    dependency: transitive
-    description:
-      name: file
-      sha256: a3b4f84adafef897088c160faf7dfffb7696046cb13ae90b508c2cbc95d3b8d4
-      url: "https://pub.dev"
-    source: hosted
-    version: "7.0.1"
->>>>>>> d76229c7fea0f6a182126e03b22484013c86fc56
   flutter:
     dependency: "direct main"
     description: flutter
@@ -379,7 +376,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.19.0"
-<<<<<<< HEAD
   mime:
     dependency: transitive
     description:
@@ -388,7 +384,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
-=======
   objective_c:
     dependency: transitive
     description:
@@ -397,7 +392,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "9.6.3"
->>>>>>> d76229c7fea0f6a182126e03b22484013c86fc56
   package_config:
     dependency: transitive
     description:
