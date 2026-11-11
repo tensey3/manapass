@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "275756460025",
+    "project_id": "manapass-2b948",
+    "storage_bucket": "manapass-2b948.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:275756460025:android:4eacdd32c9e8e89e937f28",
+        "android_client_info": {
+          "package_name": "com.example.testflutter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "275756460025-gbic9dvhr42l0kgmq0q1e3o5hhhab3hj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_zkhTxbC1tfjJ2INAUbBv9PslkHI7xts"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "275756460025-gbic9dvhr42l0kgmq0q1e3o5hhhab3hj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
