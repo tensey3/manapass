@@ -50,9 +50,10 @@ class _EmailLoginScreenState
           behavior: SnackBarBehavior.floating,
         ),
       );
+      return;
     }
 
-    // ログイン成功時の画面遷移はGoRouterに任せる
+    context.go(Routes.home);
   }
 
   // Firebaseエラーの日本語変換
