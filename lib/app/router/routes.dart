@@ -5,6 +5,9 @@ abstract final class Routes {
   static const vocab = '/vocab';
   static const progress = '/progress';
   static const settings = '/settings';
+  static const randomQuiz = '/random-quiz';
+  static const mockExam = '/mock-exam';
+  static const addFromPhoto = '/add-from-photo';
 
   // 認証関連
   static const signIn = '/sign-in';

@@ -12,7 +12,9 @@ import '../../features/home/screens/home_screen.dart';
 import '../../features/question/screens/question_list_screen.dart';
 import '../../features/progress/screens/progress_screen.dart';
 import '../../features/settings/settings_routes.dart';
-
+import '../../features/question/screens/random_quiz_screen.dart';
+import '../../features/question/screens/mock_exam_screen.dart';
+import '../../features/question/screens/photo_add_screen.dart';
 import '../shell/app_shell.dart';
 import 'routes.dart';
 
@@ -62,6 +64,18 @@ final appRouter = GoRouter(
         GoRoute(
           path: Routes.progress,
           builder: (context, state) => const ProgressScreen(),
+        ),
+        GoRoute(
+          path: Routes.randomQuiz,
+          builder: (context, state) => const RandomQuizScreen(),
+        ),
+        GoRoute(
+          path: Routes.mockExam,
+          builder: (context, state) => const MockExamScreen(),
+        ),
+        GoRoute(
+          path: Routes.addFromPhoto,
+          builder: (context, state) => const AddFromPhotoScreen(),
         ),
 
         settingsRoute,
