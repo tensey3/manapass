@@ -1,38 +1,32 @@
-import 'dart:math';
-
-import 'package:flutter/material.dart' show DateUtils;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../data/repositories/goal_repository.dart';
+import 'home_data_source.dart';
 
-class HomeState {
-  const HomeState({
-    required this.examDate,
-    required this.daysLeft,
-    required this.answered,
-    required this.target,
-  });
+/// 設定画面（試験日と目標）で保存した値を読む HomeDataSource。
+class GoalHomeDataSource implements HomeDataSource {
+  const GoalHomeDataSource(this._goals);
 
-  final DateTime examDate;
-  final int daysLeft;
-  final int answered;
-  final int target;
+  final GoalRepository _goals;
 
-  int get remaining => max(target - answered, 0);
-
-  double get progress => target == 0 ? 0 : min(answered / target, 1.0);
+  @override
+  Future<HomeData> load() async {
+    final goal = await _goals.fetchGoal();
+    final answered = await _goals.fetchTodayAnswered();
+    return HomeData(
+      examDate: goal.examDate,
+      todayAnswered: answered,
+      dailyGoal: goal.dailyTarget,
+    );
+  }
 }
 
-final homeProvider = FutureProvider<HomeState>((ref) async {
-  final repository = ref.watch(goalRepositoryProvider);
-  final goal = await repository.fetchGoal();
-  final answered = await repository.fetchTodayAnswered();
-  final today = DateUtils.dateOnly(DateTime.now());
-  final daysLeft = DateUtils.dateOnly(goal.examDate).difference(today).inDays;
-  return HomeState(
-    examDate: goal.examDate,
-    daysLeft: max(daysLeft, 0),
-    answered: answered,
-    target: goal.dailyTarget,
-  );
-});
+/// 画面確認だけしたいときは DemoHomeDataSource() に変えられる。
+final homeDataSourceProvider = Provider<HomeDataSource>(
+  (ref) => GoalHomeDataSource(ref.watch(goalRepositoryProvider)),
+);
+
+/// ホーム画面のデータ。設定画面で保存すると読み直される。
+final homeProvider = FutureProvider<HomeData>(
+  (ref) => ref.watch(homeDataSourceProvider).load(),
+);

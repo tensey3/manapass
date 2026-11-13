@@ -3,18 +3,23 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/app_card.dart';
-import '../providers/home_controller.dart';
+import '../providers/home_data_source.dart';
+import 'home_card.dart';
 
+/// 今日の目標の進み具合を丸いグラフで表示するカード。
 class GoalProgressChart extends StatelessWidget {
-  const GoalProgressChart({super.key, required this.state});
+  const GoalProgressChart({super.key, required this.data, this.width = 220, this.height});
 
-  final HomeState state;
+  final HomeData data;
+  final double width;
+  final double? height;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return AppCard(
+    return HomeCard(
+      width: width,
+      height: height,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -23,7 +28,7 @@ class GoalProgressChart extends StatelessWidget {
             height: 104,
             child: CustomPaint(
               painter: _RingPainter(
-                progress: state.progress,
+                progress: data.progress,
                 trackColor: AppColors.track,
                 color: AppColors.success,
                 strokeWidth: 12,
@@ -31,13 +36,11 @@ class GoalProgressChart extends StatelessWidget {
               child: Center(
                 child: Text.rich(
                   TextSpan(
-                    text: '${state.answered}',
-                    style: textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                    ),
+                    text: '${data.todayAnswered}',
+                    style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                     children: [
                       TextSpan(
-                        text: '/${state.target}',
+                        text: '/${data.dailyGoal}',
                         style: textTheme.labelMedium?.copyWith(
                           color: AppColors.textMuted,
                           fontWeight: FontWeight.w700,
@@ -55,7 +58,7 @@ class GoalProgressChart extends StatelessWidget {
             style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           Text(
-            state.remaining == 0 ? '目標達成!' : 'あと${state.remaining}問',
+            data.remaining == 0 ? '目標達成!' : 'あと${data.remaining}問',
             style: textTheme.labelMedium?.copyWith(
               color: AppColors.textMuted,
               fontWeight: FontWeight.w700,

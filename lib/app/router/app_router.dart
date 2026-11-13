@@ -11,6 +11,7 @@ import '../../features/auth/screens/reset_password_screen.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/question/screens/question_list_screen.dart';
 import '../../features/progress/screens/progress_screen.dart';
+import '../../features/review/screens/review_screen.dart';
 import '../../features/settings/settings_routes.dart';
 import '../../features/vocab/vocab_routes.dart'; // ← vocabRoute を使うためにインポート
 import '../../features/question/screens/random_quiz_screen.dart';
@@ -61,6 +62,10 @@ final appRouter = GoRouter(
         GoRoute(
           path: Routes.question,
           builder: (context, state) => const QuestionListScreen(),
+        ),
+        GoRoute(
+          path: Routes.review,
+          builder: (context, state) => const ReviewScreen(),
         ),
         GoRoute(
           path: Routes.progress,
