@@ -12,15 +12,16 @@ import '../../features/home/screens/home_screen.dart';
 import '../../features/question/screens/question_list_screen.dart';
 import '../../features/progress/screens/progress_screen.dart';
 import '../../features/settings/settings_routes.dart';
+import '../../features/vocab/vocab_routes.dart'; // ← vocabRoute を使うためにインポート
 import '../../features/question/screens/random_quiz_screen.dart';
 import '../../features/question/screens/mock_exam_screen.dart';
 import '../../features/question/screens/photo_add_screen.dart';
 import '../shell/app_shell.dart';
 import 'routes.dart';
 
+// 準備中のルート（現在未実装のものがあればここに追加）
 const _pendingRoutes = [
-  Routes.review,
-  Routes.vocab,
+  // Routes.review は vocab_routes.dart 内で定義されたため削除しました
 ];
 
 final appRouter = GoRouter(
@@ -77,6 +78,9 @@ final appRouter = GoRouter(
           path: Routes.addFromPhoto,
           builder: (context, state) => const AddFromPhotoScreen(),
         ),
+
+        // 単語帳画面（子ルートの review や word/:text も含まれます）
+        vocabRoute,
 
         settingsRoute,
 
