@@ -40,7 +40,7 @@ class GoalProgressChart extends StatelessWidget {
                     style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
                     children: [
                       TextSpan(
-                        text: '/${data.dailyGoal}',
+                        text: '/${data.totalQuestions > 0 ? data.totalQuestions : data.dailyGoal}',
                         style: textTheme.labelMedium?.copyWith(
                           color: AppColors.textMuted,
                           fontWeight: FontWeight.w700,

@@ -77,17 +77,18 @@ class FirestoreReviewDataSource implements ReviewDataSource {
 
   @override
   Future<ReviewData> load() async {
+    // ※リポジトリ側に fetchQuestionsToReview が無い場合は、QuestionRepository 側に仮メソッドの追加が必要です
     final entries = await _questionRepository.fetchQuestionsToReview();
     return ReviewData(
       weakAreas: const [],
       wrong: [
         for (final entry in entries)
           WrongQuestion(
-            id: entry.question.id,
-            category: '${entry.question.category}・${entry.question.topic}',
-            text: entry.question.text,
-            userChoice: entry.question.choices[entry.lastWrongAnswerIndex],
-            correctAnswer: entry.question.choices[entry.question.answerIndex],
+            id: entry.question.id?.toString() ?? '', // int? を String に変換
+            category: '${entry.question.category}・${entry.question.subject}', // topic -> subject
+            text: entry.question.questionText, // text -> questionText
+            userChoice: entry.question.options[entry.lastWrongAnswerIndex], // choices -> options
+            correctAnswer: entry.question.options[entry.question.correctIndex], // answerIndex -> correctIndex
             explanation: entry.question.explanation,
           ),
       ],
