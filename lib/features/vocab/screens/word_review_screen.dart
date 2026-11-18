@@ -2,32 +2,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/vocab_data.dart';
+import '../providers/vocab_detail_controller.dart';
 import '../providers/wordbook_controller.dart';
 import '../widgets/vocab_page.dart';
 import '../widgets/word_label_chip.dart';
 
 /// 単語帳の単語のカード。カードを押すと意味が見える。
 /// そのあと「まだ」か「覚えた」を選ぶ。最後に覚えた数を表示する。
+/// 読みは、設定でふりがなをオンにしているときだけ出す。
 class WordReviewScreen extends ConsumerWidget {
   const WordReviewScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final showReading = ref.watch(vocabSettingsProvider.select((s) => s.furigana));
     return ref.watch(savedWordsProvider).when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (error, stackTrace) => const Center(child: Text('読み込みに失敗しました')),
           data: (words) => words.isEmpty
               ? const Center(child: Text('まだ単語がありません'))
               // 始めたときの単語で最後まで進める（途中で単語帳が変わっても変えない）
-              : _Review(words: words),
+              : _Review(words: words, showReading: showReading),
         );
   }
 }
 
 class _Review extends StatefulWidget {
-  const _Review({required this.words});
+  const _Review({required this.words, required this.showReading});
 
   final List<Word> words;
+  final bool showReading;
 
   @override
   State<_Review> createState() => _ReviewState();
@@ -178,7 +182,7 @@ class _ReviewState extends State<_Review> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          if (word.reading != null)
+          if (widget.showReading && word.reading != null)
             Text(
               word.reading!,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: VocabStyle.muted),
