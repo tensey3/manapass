@@ -28,6 +28,19 @@ class _QuestionAnswerScreenState extends ConsumerState<QuestionAnswerScreen> {
   int? selectedOptionIndex; // ユーザーが選択した選択肢のインデックス
   bool isAnswered = false;    // 解答ボタンが押されて答え合わせが終わったか
 
+  /// 解答を記録する（進捗画面・復習画面がこの記録を使う）。
+  /// 記録できなくても答え合わせは続けられるように、失敗はお知らせだけ出す。
+  Future<void> _recordAnswer(Question question, int selectedIndex) async {
+    try {
+      await ref.read(questionRepositoryProvider).recordAnswer(question, selectedIndex);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('解答を記録できませんでした（進捗には反映されません）')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // データベースから問題リストを非同期で取得（widget.year と widget.subject を使用）
@@ -199,6 +212,7 @@ class _QuestionAnswerScreenState extends ConsumerState<QuestionAnswerScreen> {
                         setState(() {
                           isAnswered = true;
                         });
+                        _recordAnswer(questions[currentIndex], selectedOptionIndex!);
                       } else {
                         // 2回目のタップ：次の問題へ進む（あるいは終了）
                         if (currentIndex < questions.length - 1) {

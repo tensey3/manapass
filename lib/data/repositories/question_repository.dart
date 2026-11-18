@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/question.dart';
 
@@ -16,9 +17,11 @@ class ReviewEntry {
 
 class QuestionRepository {
   final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
 
-  QuestionRepository([FirebaseFirestore? firestore])
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+  QuestionRepository([FirebaseFirestore? firestore, FirebaseAuth? auth])
+      : _firestore = firestore ?? FirebaseFirestore.instance,
+        _auth = auth ?? FirebaseAuth.instance;
 
   // ① Firestore の 'questions' コレクションからすべての問題を取得
   Future<List<Question>> getAllQuestions() async {
@@ -71,9 +74,95 @@ class QuestionRepository {
     }
   }
 
-  // 復習用の間違えた問題リストを取得（プレースホルダー）
+  // ⑤ 指定した ID の問題を、その順番で取得（復習の解き直しで使う）
+  Future<List<Question>> fetchQuestionsByIds(List<String> ids) async {
+    final questionsById = <String, Question>{};
+    // Firestore の whereIn は一度に30件まで
+    for (var start = 0; start < ids.length; start += 30) {
+      final batch = ids.skip(start).take(30).toList();
+      final snapshot = await _firestore
+          .collection('questions')
+          .where(FieldPath.documentId, whereIn: batch)
+          .get();
+      for (final doc in snapshot.docs) {
+        questionsById[doc.id] = Question.fromMap({...doc.data(), 'id': doc.id});
+      }
+    }
+    return [
+      for (final id in ids)
+        if (questionsById[id] case final question?) question,
+    ];
+  }
+
+  // ⑥ 復習が必要な問題（最後に間違えた問題）と、そのとき選んだ答え
   Future<List<ReviewEntry>> fetchQuestionsToReview() async {
-    return [];
+    final userId = _requireUserId();
+    final progress = await _progress(userId)
+        .where('needsReview', isEqualTo: true)
+        .get();
+    if (progress.docs.isEmpty) return [];
+
+    final questions = await fetchQuestionsByIds(
+      progress.docs.map((doc) => doc.id).toList(),
+    );
+    final questionsById = {for (final q in questions) q.id.toString(): q};
+
+    final entries = <ReviewEntry>[];
+    for (final doc in progress.docs) {
+      final question = questionsById[doc.id];
+      final wrongIndex = doc.data()['lastWrongAnswerIndex'];
+      // もう無い問題や、形のおかしい記録は飛ばす
+      if (question == null ||
+          wrongIndex is! int ||
+          wrongIndex < 0 ||
+          wrongIndex >= question.choices.length) {
+        continue;
+      }
+      entries.add(ReviewEntry(question: question, lastWrongAnswerIndex: wrongIndex));
+    }
+    return entries;
+  }
+
+  // ⑦ 解答を記録する（進捗画面と復習画面がこの記録を使う）
+  // users/{uid}/questionProgress/{問題ID} に、解いた回数・間違えた回数・復習が必要かを保存
+  Future<void> recordAnswer(Question question, int selectedIndex) async {
+    if (selectedIndex < 0 || selectedIndex >= question.choices.length) {
+      throw ArgumentError.value(selectedIndex, 'selectedIndex');
+    }
+    final questionId = question.id?.toString();
+    if (questionId == null || questionId.isEmpty) {
+      throw StateError('問題IDがないので、解答を記録できません');
+    }
+    final userId = _requireUserId();
+    final isCorrect = selectedIndex == question.answerIndex;
+    final record = _progress(userId).doc(questionId);
+
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(record);
+      final previous = snapshot.data() ?? const <String, dynamic>{};
+      final attempts = previous['attempts'];
+      final wrongCount = previous['wrongCount'];
+
+      transaction.set(record, {
+        'attempts': (attempts is int ? attempts : 0) + 1,
+        'wrongCount': (wrongCount is int ? wrongCount : 0) + (isCorrect ? 0 : 1),
+        'needsReview': !isCorrect,
+        if (!isCorrect) 'lastWrongAnswerIndex': selectedIndex,
+        'lastAnsweredCorrectly': isCorrect,
+        'lastAnsweredAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+    });
+  }
+
+  CollectionReference<Map<String, dynamic>> _progress(String userId) =>
+      _firestore.collection('users').doc(userId).collection('questionProgress');
+
+  String _requireUserId() {
+    final userId = _auth.currentUser?.uid;
+    if (userId == null) {
+      throw StateError('解答記録を保存するにはログインが必要です');
+    }
+    return userId;
   }
 
   // ④ 問題データを Firestore に新規追加するメソッド

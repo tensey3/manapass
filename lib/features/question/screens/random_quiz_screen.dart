@@ -43,8 +43,22 @@ class _RandomQuizScreenState extends ConsumerState<RandomQuizScreen> {
       _loadError = null;
     });
     try {
-      // リポジトリから全問題を取得
       final repository = ref.read(questionRepositoryProvider);
+
+      // 復習画面の「解き直す」から来たときは、その問題だけをすぐ出題する
+      final retryIds = widget.questionIds;
+      if (retryIds != null && retryIds.isNotEmpty) {
+        final retry = await repository.fetchQuestionsByIds(retryIds);
+        if (!mounted) return;
+        setState(() {
+          _availableQuestions = retry;
+          _quizQuestions = retry;
+          _loading = false;
+        });
+        return;
+      }
+
+      // リポジトリから全問題を取得
       final questions = await repository.getAllQuestions();
 
       if (!mounted) return;
@@ -91,8 +105,8 @@ class _RandomQuizScreenState extends ConsumerState<RandomQuizScreen> {
       _answerError = null;
     });
     try {
-      // 記録処理（リポジトリにメソッドがある場合はここで呼び出し）
-      await Future.delayed(const Duration(milliseconds: 300)); // プレースホルダー処理
+      // 解答を記録する（進捗画面・復習画面がこの記録を使う）
+      await ref.read(questionRepositoryProvider).recordAnswer(question, answer);
 
       if (!mounted) return;
       setState(() {

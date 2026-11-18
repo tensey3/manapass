@@ -54,7 +54,7 @@ class Question {
         map['text'] ??
         '';
 
-    int ansIndex = map['answerIndex'] ?? map['correct_index'] ?? 0;
+    int ansIndex = answerIndexFromMap(map);
 
     return Question(
       id: map['id'],
@@ -69,6 +69,22 @@ class Question {
       explanation: map['explanation'] ?? '',
       source: map['source'] as String?,
     );
+  }
+
+  /// 正解の番号（0 = ア）。
+  /// 過去問データ（assets/questions/20xx_kamoku_a.json）は正解を "answer": "エ" のように
+  /// 記号で持っているので、番号に直す。番号がなくて記号も読めないときだけ 0。
+  static int answerIndexFromMap(Map<String, dynamic> map) {
+    final index = map['answerIndex'] ?? map['correct_index'] ?? map['correctIndex'];
+    if (index is int) return index;
+    final answer = map['answer'];
+    if (answer is int) return answer;
+    if (answer is String) {
+      const symbols = ['ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク'];
+      final i = symbols.indexOf(answer.trim());
+      if (i >= 0) return i;
+    }
+    return 0;
   }
 
   Map<String, dynamic> toMap() {
