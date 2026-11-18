@@ -1,140 +1,83 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../features/auth/providers/auth_controller.dart';
 import '../models/question.dart';
 
-class QuestionReviewEntry {
-  const QuestionReviewEntry({
-    required this.question,
-    required this.lastWrongAnswerIndex,
-  });
+// Riverpod の Provider 定義
+final questionRepositoryProvider = Provider<QuestionRepository>((ref) {
+  return QuestionRepository();
+});
 
+// 復習用のデータ構造
+class ReviewEntry {
   final Question question;
   final int lastWrongAnswerIndex;
+  ReviewEntry({required this.question, required this.lastWrongAnswerIndex});
 }
 
 class QuestionRepository {
-  QuestionRepository(this._firestore, this._auth);
-
   final FirebaseFirestore _firestore;
-  final FirebaseAuth _auth;
 
-  CollectionReference<Map<String, dynamic>> get _questions =>
-      _firestore.collection('questions');
+  QuestionRepository([FirebaseFirestore? firestore])
+      : _firestore = firestore ?? FirebaseFirestore.instance;
 
-  Future<List<Question>> fetchQuestions() async {
-    final snapshot = await _questions.get();
-    return snapshot.docs
-        .map((document) => Question.fromFirestore(document.id, document.data()))
-        .toList(growable: false);
+  // ① Firestore の 'questions' コレクションからすべての問題を取得
+  Future<List<Question>> getAllQuestions() async {
+    try {
+      final snapshot = await _firestore.collection('questions').get();
+      return snapshot.docs.map((doc) {
+        final data = doc.data();
+        return Question.fromMap({
+          'id': doc.id,
+          ...data,
+        });
+      }).toList();
+    } catch (e) {
+      print('Firestore fetch error: $e');
+      return [];
+    }
   }
 
-  Future<List<Question>> fetchQuestionsByIds(List<String> ids) async {
-    final questionsById = <String, Question>{};
-    for (var start = 0; start < ids.length; start += 30) {
-      final batch = ids.skip(start).take(30).toList(growable: false);
-      if (batch.isEmpty) continue;
-
-      final snapshot = await _questions
-          .where(FieldPath.documentId, whereIn: batch)
+  // ② 指定した年度・科目の問題一覧を取得
+  Future<List<Question>> getQuestionsByYearAndSubject(int year, String subject) async {
+    try {
+      // Firestore側で効率よく絞り込むクエリ
+      final querySnapshot = await _firestore
+          .collection('questions')
+          .where('year', isEqualTo: year)
+          .where('subject', isEqualTo: subject)
           .get();
-      for (final document in snapshot.docs) {
-        questionsById[document.id] = Question.fromFirestore(
-          document.id,
-          document.data(),
-        );
-      }
+
+      return querySnapshot.docs.map((doc) {
+        final data = doc.data();
+        return Question.fromMap({
+          'id': doc.id,
+          ...data,
+        });
+      }).toList();
+    } catch (e) {
+      print('Firestore query error: $e');
+      return [];
     }
-    return [
-      for (final id in ids)
-        if (questionsById[id] case final question?) question,
-    ];
   }
 
-  Future<List<QuestionReviewEntry>> fetchQuestionsToReview() async {
-    final userId = _requireUserId();
-    final progress = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('questionProgress')
-        .where('needsReview', isEqualTo: true)
-        .get();
-    if (progress.docs.isEmpty) return const [];
-
-    final ids = progress.docs.map((document) => document.id).toList();
-    final questions = await fetchQuestionsByIds(ids);
-    final questionsById = {
-      for (final question in questions) question.id: question,
-    };
-
-    final entries = <QuestionReviewEntry>[];
-    for (final document in progress.docs) {
-      final question = questionsById[document.id];
-      if (question == null) continue;
-
-      final answerIndex = document.data()['lastWrongAnswerIndex'];
-      if (answerIndex is! int ||
-          answerIndex < 0 ||
-          answerIndex >= question.choices.length) {
-        throw FormatException(
-          'users/$userId/questionProgress/${document.id} の '
-          'lastWrongAnswerIndex が不正です',
-        );
-      }
-      entries.add(
-        QuestionReviewEntry(
-          question: question,
-          lastWrongAnswerIndex: answerIndex,
-        ),
-      );
+  // ③ 指定した年度・科目の総問題数を取得（これが分母になります）
+  Future<int> getQuestionCount(int year, String subject) async {
+    try {
+      final questions = await getQuestionsByYearAndSubject(year, subject);
+      return questions.length;
+    } catch (e) {
+      print('Firestore count error: $e');
+      return 0;
     }
-    return entries;
   }
 
-  Future<void> recordAnswer(Question question, int selectedIndex) async {
-    if (selectedIndex < 0 || selectedIndex >= question.choices.length) {
-      throw ArgumentError.value(selectedIndex, 'selectedIndex');
-    }
-    final userId = _requireUserId();
-    final isCorrect = selectedIndex == question.answerIndex;
-    final progress = _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('questionProgress')
-        .doc(question.id);
-
-    await _firestore.runTransaction((transaction) async {
-      final snapshot = await transaction.get(progress);
-      final previous = snapshot.data() ?? const <String, dynamic>{};
-      final attempts = previous['attempts'];
-      final wrongCount = previous['wrongCount'];
-
-      transaction.set(progress, {
-        'attempts': (attempts is int ? attempts : 0) + 1,
-        'wrongCount':
-            (wrongCount is int ? wrongCount : 0) + (isCorrect ? 0 : 1),
-        'needsReview': !isCorrect,
-        if (!isCorrect) 'lastWrongAnswerIndex': selectedIndex,
-        'lastAnsweredCorrectly': isCorrect,
-        'lastAnsweredAt': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true));
-    });
+  // 復習用の間違えた問題リストを取得（プレースホルダー）
+  Future<List<ReviewEntry>> fetchQuestionsToReview() async {
+    return [];
   }
 
-  String _requireUserId() {
-    final userId = _auth.currentUser?.uid;
-    if (userId == null) {
-      throw StateError('解答記録を保存するにはログインが必要です');
-    }
-    return userId;
+  // ④ 問題データを Firestore に新規追加するメソッド
+  Future<void> insertQuestion(Question question) async {
+    await _firestore.collection('questions').add(question.toMap());
   }
 }
-
-final questionRepositoryProvider = Provider<QuestionRepository>((ref) {
-  return QuestionRepository(
-    FirebaseFirestore.instance,
-    ref.watch(firebaseAuthProvider),
-  );
-});

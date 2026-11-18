@@ -1,0 +1,26 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
+import '../models/question.dart';
+
+abstract class QuestionRepository {
+  Future<List<Question>> fetchQuestions();
+}
+
+class AssetQuestionRepository implements QuestionRepository {
+  @override
+  Future<List<Question>> fetchQuestions() async {
+    try {
+      // assets/licenses/source_questions.txt からファイルを読み込む
+      final String jsonString = await rootBundle.loadString('assets/licenses/source_questions.txt');
+
+      // JSON文字列をListに変換
+      final List<dynamic> jsonList = json.decode(jsonString);
+
+      // Questionモデルのリストにマッピングして返す
+      return jsonList.map((json) => Question.fromMap(json)).toList();
+    } catch (e) {
+      print('過去問データの読み込みエラー: $e');
+      return [];
+    }
+  }
+}

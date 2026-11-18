@@ -6,12 +6,14 @@ class HomeData {
   final DateTime? examDate;
   final int todayAnswered;
   final int dailyGoal;
+  final int totalQuestions;
 
   const HomeData({
     this.examName,
     this.examDate,
     required this.todayAnswered,
     required this.dailyGoal,
+    this.totalQuestions = 0,
   });
 
   /// 試験日までの日数（日付単位。当日と試験日が過ぎたあとは0）。未設定なら null。
@@ -26,6 +28,7 @@ class HomeData {
 
   int get remaining => (dailyGoal - todayAnswered).clamp(0, dailyGoal);
   double get progress => dailyGoal == 0 ? 0 : (todayAnswered / dailyGoal).clamp(0.0, 1.0);
+  double get totalProgress => totalQuestions == 0 ? 0 : (todayAnswered / totalQuestions).clamp(0.0, 1.0);
 }
 
 abstract class HomeDataSource {
@@ -41,5 +44,6 @@ class DemoHomeDataSource implements HomeDataSource {
         examDate: DateTime.now().add(const Duration(days: 42)),
         todayAnswered: 5,
         dailyGoal: 10,
+        totalQuestions: 20,
       );
 }

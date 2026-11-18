@@ -1,62 +1,89 @@
 class Question {
-  const Question({
-    required this.id,
-    required this.exam,
-    required this.category,
-    required this.topic,
-    required this.text,
-    required this.choices,
-    required this.answerIndex,
-    required this.explanation,
-  });
-
-  final String id;
-  final String exam;
+  final Object? id;
+  final int? year;
+  final String? exam;
+  final String subject;
   final String category;
   final String topic;
-  final String text;
+
+  final String question;
   final List<String> choices;
   final int answerIndex;
+
   final String explanation;
+  final String? source;
 
-  factory Question.fromFirestore(String id, Map<String, dynamic> data) {
-    String requiredString(String key) {
-      final value = data[key];
-      if (value is! String || value.trim().isEmpty) {
-        throw FormatException('questions/$id の $key が不正です');
-      }
-      return value;
+  // --- 互換性のための Getter ---
+  String get questionText => question;
+  List<String> get options => choices;
+  int get correctIndex => answerIndex;
+
+  // どちらのパラメータ名（新旧）で渡されても両方受け取れるコンストラクタ
+  Question({
+    this.id,
+    this.year,
+    this.exam,
+    this.subject = '科目A',
+    this.category = '',
+    this.topic = '',
+    String? question,
+    String? questionText,
+    List<String>? choices,
+    List<String>? options,
+    int? answerIndex,
+    int? correctIndex,
+    String? explanation,
+    this.source,
+  })  : question = question ?? questionText ?? '',
+        choices = choices ?? options ?? const [],
+        answerIndex = answerIndex ?? correctIndex ?? 0,
+        explanation = explanation ?? '';
+
+  factory Question.fromMap(Map<String, dynamic> map) {
+    List<String> parsedChoices = [];
+    final rawChoices = map['choices'] ?? map['options'];
+    if (rawChoices is List) {
+      parsedChoices = rawChoices.map((e) => e.toString()).toList();
+    } else if (rawChoices is String) {
+      parsedChoices = rawChoices.split('|||');
     }
 
-    final rawChoices = data['choices'];
-    if (rawChoices is! List || rawChoices.isEmpty) {
-      throw FormatException('questions/$id の choices が不正です');
-    }
-    final choices = rawChoices
-        .map((choice) {
-          if (choice is! String || choice.trim().isEmpty) {
-            throw FormatException('questions/$id の choices に不正な値があります');
-          }
-          return choice;
-        })
-        .toList(growable: false);
+    String qText = map['question'] ??
+        map['questionText'] ??
+        map['question_text'] ??
+        map['text'] ??
+        '';
 
-    final answerIndex = data['answerIndex'];
-    if (answerIndex is! int ||
-        answerIndex < 0 ||
-        answerIndex >= choices.length) {
-      throw FormatException('questions/$id の answerIndex が不正です');
-    }
+    int ansIndex = map['answerIndex'] ?? map['correct_index'] ?? 0;
 
     return Question(
-      id: id,
-      exam: requiredString('exam'),
-      category: requiredString('category'),
-      topic: requiredString('topic'),
-      text: requiredString('question'),
-      choices: choices,
-      answerIndex: answerIndex,
-      explanation: requiredString('explanation'),
+      id: map['id'],
+      year: map['year'] as int?,
+      exam: map['exam'] as String?,
+      subject: map['subject'] ?? map['topic'] ?? '科目A',
+      category: map['category'] ?? '',
+      topic: map['topic'] ?? map['subject'] ?? '',
+      question: qText,
+      choices: parsedChoices,
+      answerIndex: ansIndex,
+      explanation: map['explanation'] ?? '',
+      source: map['source'] as String?,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'year': year,
+      'exam': exam,
+      'subject': subject,
+      'category': category,
+      'topic': topic,
+      'question': question,
+      'choices': choices,
+      'answerIndex': answerIndex,
+      'explanation': explanation,
+      'source': source,
+    };
   }
 }
