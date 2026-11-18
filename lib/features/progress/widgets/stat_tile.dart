@@ -13,8 +13,8 @@ class SummaryCards extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tiles = [
-      StatTile(value: '${state.accuracyPercent}%', label: '正答率'),
-      StatTile(value: formatMinutes(state.weekTotalMinutes), label: '今週の学習時間'),
+      StatTile(value: _orDash(state.accuracyPercent, (p) => '$p%'), label: '正答率'),
+      StatTile(value: _orDash(state.weekTotalMinutes, formatMinutes), label: '今週の学習時間'),
       StatTile(value: '${state.questionsDone}', label: '解いた問題'),
       StatTile(value: '${state.toReview}', label: '復習が必要'),
     ];
@@ -29,6 +29,9 @@ class SummaryCards extends StatelessWidget {
     });
   }
 }
+
+/// まだ数字がないときは「—」。
+String _orDash(int? value, String Function(int) format) => value == null ? '—' : format(value);
 
 /// 数字1つと、その説明。
 class StatTile extends StatelessWidget {

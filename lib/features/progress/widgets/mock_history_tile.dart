@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../data/progress_sample.dart';
+import '../data/progress_models.dart';
 import 'progress_surface.dart';
 
 /// 模擬試験の記録（新しい順）。
