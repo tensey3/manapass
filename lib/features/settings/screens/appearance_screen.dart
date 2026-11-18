@@ -30,7 +30,7 @@ class AppearanceScreen extends ConsumerWidget {
                 const SectionLabel('見え方'),
                 _Preview(settings: settings),
                 const SizedBox(height: 12),
-                const NoteBox('選んだ見た目は保存されます。アプリ全体への反映は、今後対応予定です。'),
+                const NoteBox('フォントはアプリ全体に反映されます。テーマカラーとモードは保存されますが、アプリ全体への反映は今後対応予定です。'),
                 const SizedBox(height: 26),
                 const SectionLabel('テーマカラー'),
                 ColorPickerRow(selectedId: settings.themeId, onChanged: controller.setThemeId),

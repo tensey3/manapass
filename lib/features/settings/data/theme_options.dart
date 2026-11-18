@@ -27,6 +27,16 @@ ThemePreset themePresetOf(String id) =>
 /// 選べるフォント（すべて Google Fonts の無料フォント）。
 const fontFamilies = ['Zen Maru Gothic', 'M PLUS Rounded 1c', 'Kiwi Maru', 'BIZ UDPGothic'];
 
+/// アプリ全体の文字を、選んだフォントにする（app.dart で使う）。
+TextTheme fontTextTheme(String family, TextTheme base) {
+  return switch (family) {
+    'M PLUS Rounded 1c' => GoogleFonts.mPlusRounded1cTextTheme(base),
+    'Kiwi Maru' => GoogleFonts.kiwiMaruTextTheme(base),
+    'BIZ UDPGothic' => GoogleFonts.bizUDPGothicTextTheme(base),
+    _ => GoogleFonts.zenMaruGothicTextTheme(base),
+  };
+}
+
 /// フォント名から文字のスタイルを作る。
 /// 名前で探さず直接呼ぶので、この4つのフォントだけがアプリに入る。
 TextStyle fontStyle(

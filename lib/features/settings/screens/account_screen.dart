@@ -1,40 +1,75 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../app/router/routes.dart';
+import '../providers/account_controller.dart';
 import '../widgets/confirm_dialog.dart';
+import '../widgets/password_confirm_dialog.dart';
 import '../widgets/settings_page.dart';
 import '../widgets/settings_tile.dart';
 
-/// 今はログイン機能がないので、見本のユーザーを表示する。
-/// ログイン機能ができたら、本物のアカウント情報に置き換える。
-const sampleUser = (name: 'Linh', email: 'linh@example.com', signInMethod: 'Google');
-
 /// アカウント：ログイン中のユーザー、同期、ログアウト、アカウント削除。
-class AccountScreen extends StatelessWidget {
+class AccountScreen extends ConsumerWidget {
   const AccountScreen({super.key});
 
-  void _notReady(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('ログイン機能は準備中です')));
+  void _toast(BuildContext context, String text) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
   }
 
-  Future<void> _logout(BuildContext context) async {
+  Future<void> _logout(BuildContext context, WidgetRef ref) async {
     final ok = await showConfirmDialog(context, title: 'ログアウトしますか？', ok: 'ログアウト');
-    if (ok && context.mounted) _notReady(context);
+    if (!ok || !context.mounted) return;
+    try {
+      await signOut(ref);
+    } catch (_) {
+      if (context.mounted) _toast(context, 'ログアウトできませんでした。もう一度お試しください');
+      return;
+    }
+    if (context.mounted) context.go(Routes.signIn);
   }
 
-  Future<void> _delete(BuildContext context) async {
-    final ok = await showConfirmDialog(
+  Future<void> _delete(BuildContext context, WidgetRef ref) async {
+    const title = 'アカウントを削除しますか？';
+    const message = '学習記録と単語帳がすべて消えます。元に戻せません。';
+    final deleted = await showPasswordConfirmDialog(
       context,
-      title: 'アカウントを削除しますか？',
-      message: '学習記録と単語帳がすべて消えます。元に戻せません。',
+      title: title,
+      message: '$message\n確認のため、パスワードを入力してください。',
       ok: '削除する',
-      danger: true,
+      onConfirm: (password) => deleteAccount(ref, password: password),
     );
-    if (ok && context.mounted) _notReady(context);
+    if (!deleted || !context.mounted) return;
+    _toast(context, 'アカウントを削除しました');
+    context.go(Routes.signIn);
   }
 
   @override
-  Widget build(BuildContext context) {
-    final name = sampleUser.name;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final account = ref.watch(accountProvider);
+    if (account == null) {
+      return SettingsPage(
+        title: 'アカウント',
+        children: [
+          const NoteBox('ログインしていません。ログインすると、学習記録がアカウントに保存されます。'),
+          const SizedBox(height: 20),
+          SizedBox(
+            height: 54,
+            child: FilledButton.icon(
+              onPressed: () => context.go(Routes.signIn),
+              icon: const Icon(Icons.login_rounded),
+              label: const Text('ログイン', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900)),
+              style: FilledButton.styleFrom(
+                backgroundColor: SettingsStyle.primary,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(SettingsStyle.buttonRadius)),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    final name = account.name;
     return SettingsPage(
       title: 'アカウント',
       children: [
@@ -56,11 +91,19 @@ class AccountScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900)),
                     Text(
-                      sampleUser.email,
-                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: SettingsStyle.muted),
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900),
                     ),
+                    if (account.email.isNotEmpty)
+                      Text(
+                        account.email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: SettingsStyle.muted),
+                      ),
                   ],
                 ),
               ),
@@ -70,11 +113,11 @@ class AccountScreen extends StatelessWidget {
         const SizedBox(height: 22),
         SettingsGroup(
           children: [
-            SettingsRow(icon: Icons.login_rounded, title: 'ログイン方法', value: sampleUser.signInMethod),
+            SettingsRow(icon: Icons.login_rounded, title: 'ログイン方法', value: account.signInMethod),
             const SettingsRow(
               icon: Icons.cloud_done_rounded,
               title: 'データの同期',
-              subtitle: '学習記録はアカウントに保存されます',
+              subtitle: '問題の解答記録はアカウントに保存されます',
               value: '済み',
               color: SettingsStyle.correct,
             ),
@@ -84,7 +127,7 @@ class AccountScreen extends StatelessWidget {
         SizedBox(
           height: 54,
           child: OutlinedButton.icon(
-            onPressed: () => _logout(context),
+            onPressed: () => _logout(context, ref),
             icon: const Icon(Icons.logout_rounded),
             label: const Text('ログアウト', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900)),
             style: OutlinedButton.styleFrom(
@@ -98,7 +141,7 @@ class AccountScreen extends StatelessWidget {
         const SizedBox(height: 8),
         Center(
           child: TextButton(
-            onPressed: () => _delete(context),
+            onPressed: () => _delete(context, ref),
             child: const Text(
               'アカウントを削除',
               style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: SettingsStyle.wrongText),

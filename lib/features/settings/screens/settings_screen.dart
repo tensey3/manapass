@@ -4,13 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../data/theme_options.dart';
+import '../providers/account_controller.dart';
 import '../providers/exam_goal_controller.dart';
 import '../providers/settings_controller.dart';
 import '../settings_routes.dart';
 import '../widgets/language_sheet.dart';
 import '../widgets/settings_page.dart';
 import '../widgets/settings_tile.dart';
-import 'account_screen.dart';
 
 /// 設定：アカウント、学習、表示（見た目と言語）、このアプリについて。
 class SettingsScreen extends ConsumerWidget {
@@ -20,6 +20,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider).valueOrNull;
     final goal = ref.watch(examGoalProvider).valueOrNull;
+    final account = ref.watch(accountProvider);
 
     return SettingsPage(
       title: '設定',
@@ -30,7 +31,7 @@ class SettingsScreen extends ConsumerWidget {
             SettingsRow(
               icon: Icons.person_rounded,
               title: 'アカウント',
-              value: sampleUser.name,
+              value: account?.name ?? 'ログインしていません',
               onTap: () => context.push(SettingsRoutes.account),
             ),
           ],
