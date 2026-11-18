@@ -57,6 +57,12 @@ void main() {
     });
   });
 
+  test('分野のない問題は「その他」', () {
+    expect(topicOf(topic: 'データベース', subject: '科目A'), 'データベース');
+    expect(topicOf(topic: '科目A', subject: '科目A'), otherTopic);
+    expect(topicOf(topic: '  ', subject: '科目A'), otherTopic);
+  });
+
   group('buildProgress', () {
     test('記録から数字を計算する', () {
       final state = buildProgress(

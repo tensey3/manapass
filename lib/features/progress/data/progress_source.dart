@@ -16,6 +16,15 @@ class ProgressData {
   final List<MockResult> mockResults;
 }
 
+/// 分野が決まっていない問題をまとめる名前。
+const otherTopic = 'その他';
+
+/// 問題の分野。分野のない問題は、モデルが科目名（科目A など）を入れてくるので「その他」にする。
+String topicOf({required String topic, required String subject}) {
+  final t = topic.trim();
+  return t.isEmpty || t == subject.trim() ? otherTopic : t;
+}
+
 /// 進捗の記録を読み込むところ。テストでは差し替える。
 abstract interface class ProgressSource {
   /// ログインしていなければ null。
@@ -37,15 +46,20 @@ class FirestoreProgressSource implements ProgressSource {
     if (userId == null) return null;
 
     final (questions, records) = await (
-      _questions.fetchQuestions(),
+      _questions.getAllQuestions(),
       _firestore.collection('users').doc(userId).collection('questionProgress').get(),
     ).wait;
 
-    final topicById = {for (final q in questions) q.id: q.topic};
+    final topicById = {
+      for (final q in questions)
+        if (q.id != null) q.id.toString(): topicOf(topic: q.topic, subject: q.subject),
+    };
     final topics = <String>[];
     for (final topic in topicById.values) {
       if (!topics.contains(topic)) topics.add(topic);
     }
+    // 「その他」は最後に表示する
+    if (topics.remove(otherTopic)) topics.add(otherTopic);
 
     // 復習画面と同じく、もう無い問題の記録は数えない
     final answers = [
