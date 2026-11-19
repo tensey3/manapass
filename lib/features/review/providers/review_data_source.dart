@@ -89,15 +89,13 @@ class FirestoreReviewDataSource implements ReviewDataSource {
             category: '${entry.question.category}・${entry.question.subject}', // topic -> subject
             text: entry.question.questionText, // text -> questionText
             userChoice: entry.question.options[entry.lastWrongAnswerIndex], // choices -> options
-            correctAnswer: entry.question.options[entry.question.correctIndex], // answerIndex -> correctIndex
+            correctAnswer: entry.question.options[entry.correctIndex], // answerIndex -> correctIndex
             explanation: entry.question.explanation,
           ),
       ],
     );
   }
-<<<<<<< HEAD
-}
-=======
+
   List<WeakArea> _buildWeakAreas(List<QuestionHistoryEntry> history) {
     final totals = <String, int>{};
     final corrects = <String, int>{};
@@ -124,4 +122,3 @@ class FirestoreReviewDataSource implements ReviewDataSource {
     return areas;
   }
 }
->>>>>>> feature
