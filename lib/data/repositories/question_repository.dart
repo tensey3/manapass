@@ -8,11 +8,29 @@ final questionRepositoryProvider = Provider<QuestionRepository>((ref) {
   return QuestionRepository();
 });
 
+<<<<<<< HEAD
 // 復習用のデータ構造
 class ReviewEntry {
+=======
+
+>>>>>>> feature
   final Question question;
   final int lastWrongAnswerIndex;
   ReviewEntry({required this.question, required this.lastWrongAnswerIndex});
+}
+
+class QuestionHistoryEntry {
+  const QuestionHistoryEntry({
+    required this.question,
+    required this.attempts,
+    required this.wrongCount,
+  });
+
+  final Question question;
+  final int attempts;
+  final int wrongCount;
+
+  int get correctCount => attempts - wrongCount;
 }
 
 class QuestionRepository {
@@ -123,8 +141,60 @@ class QuestionRepository {
     return entries;
   }
 
+<<<<<<< HEAD
   // ⑦ 解答を記録する（進捗画面と復習画面がこの記録を使う）
   // users/{uid}/questionProgress/{問題ID} に、解いた回数・間違えた回数・復習が必要かを保存
+=======
+  Future<List<QuestionHistoryEntry>> fetchQuestionHistory() async {
+    final userId = _requireUserId();
+
+    final progress = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('questionProgress')
+        .get();
+
+    if (progress.docs.isEmpty) return const [];
+
+    final ids = progress.docs.map((document) => document.id).toList();
+    final questions = await fetchQuestionsByIds(ids);
+
+    final questionsById = {
+      for (final question in questions) question.id: question,
+    };
+
+    final entries = <QuestionHistoryEntry>[];
+
+    for (final document in progress.docs) {
+      final question = questionsById[document.id];
+
+      if (question == null) continue;
+
+      final data = document.data();
+      final attempts = data['attempts'];
+      final wrongCount = data['wrongCount'];
+
+      if (attempts is! int ||
+          wrongCount is! int ||
+          attempts <= 0 ||
+          wrongCount < 0 ||
+          wrongCount > attempts) {
+        continue;
+      }
+
+      entries.add(
+        QuestionHistoryEntry(
+          question: question,
+          attempts: attempts,
+          wrongCount: wrongCount,
+        ),
+      );
+    }
+
+    return entries;
+  }
+
+>>>>>>> feature
   Future<void> recordAnswer(Question question, int selectedIndex) async {
     if (selectedIndex < 0 || selectedIndex >= question.choices.length) {
       throw ArgumentError.value(selectedIndex, 'selectedIndex');

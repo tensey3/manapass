@@ -14,3 +14,4 @@ void main() {
     expect(find.text('今日の目標'), findsOneWidget);
   });
 }
+
