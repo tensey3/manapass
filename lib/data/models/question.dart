@@ -39,6 +39,26 @@ class Question {
         answerIndex = answerIndex ?? correctIndex ?? 0,
         explanation = explanation ?? '';
 
+  static String? _asNullableString(Object? value) {
+    if (value == null) return null;
+    if (value is String) return value;
+    return value.toString();
+  }
+
+  static String _asString(Object? value, {String fallback = ''}) {
+    if (value == null) return fallback;
+    if (value is String) return value;
+    return value.toString();
+  }
+
+  static int? _asNullableInt(Object? value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is num) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
+  }
+
   factory Question.fromMap(Map<String, dynamic> map) {
     List<String> parsedChoices = [];
     final rawChoices = map['choices'] ?? map['options'];
@@ -48,26 +68,32 @@ class Question {
       parsedChoices = rawChoices.split('|||');
     }
 
-    String qText = map['question'] ??
+    final rawQuestion = map['question'] ??
         map['questionText'] ??
         map['question_text'] ??
-        map['text'] ??
-        '';
+        map['text'];
+    final qText = _asString(rawQuestion, fallback: '');
 
-    int ansIndex = answerIndexFromMap(map);
+    final rawSubject = map['subject'] ?? map['topic'];
+    final subject = _asString(rawSubject, fallback: '科目A');
+
+    final rawTopic = map['topic'] ?? map['subject'];
+    final topic = _asString(rawTopic, fallback: '');
+
+    final int ansIndex = answerIndexFromMap(map);
 
     return Question(
       id: map['id'],
-      year: map['year'] as int?,
-      exam: map['exam'] as String?,
-      subject: map['subject'] ?? map['topic'] ?? '科目A',
-      category: map['category'] ?? '',
-      topic: map['topic'] ?? map['subject'] ?? '',
+      year: _asNullableInt(map['year']),
+      exam: _asNullableString(map['exam']),
+      subject: subject,
+      category: _asString(map['category'], fallback: ''),
+      topic: topic,
       question: qText,
       choices: parsedChoices,
       answerIndex: ansIndex,
-      explanation: map['explanation'] ?? '',
-      source: map['source'] as String?,
+      explanation: _asString(map['explanation'], fallback: ''),
+      source: _asNullableString(map['source']),
     );
   }
 
@@ -75,10 +101,18 @@ class Question {
   /// 過去問データ（assets/questions/20xx_kamoku_a.json）は正解を "answer": "エ" のように
   /// 記号で持っているので、番号に直す。番号がなくて記号も読めないときだけ 0。
   static int answerIndexFromMap(Map<String, dynamic> map) {
-    final index = map['answerIndex'] ?? map['correct_index'] ?? map['correctIndex'];
+    final index =
+        map['answerIndex'] ?? map['correct_index'] ?? map['correctIndex'];
     if (index is int) return index;
+    if (index is num) return index.toInt();
+    if (index is String) {
+      final parsed = int.tryParse(index.trim());
+      if (parsed != null) return parsed;
+    }
+
     final answer = map['answer'];
     if (answer is int) return answer;
+    if (answer is num) return answer.toInt();
     if (answer is String) {
       const symbols = ['ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク'];
       final i = symbols.indexOf(answer.trim());
