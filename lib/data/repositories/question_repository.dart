@@ -202,7 +202,10 @@ class QuestionRepository {
 
     await _firestore.runTransaction((transaction) async {
       final snapshot = await transaction.get(record);
-      final previous = snapshot.data() ?? const <String, dynamic>{};
+      final rawPrevious = snapshot.data();
+      final previous = rawPrevious is Map<String, dynamic>
+          ? rawPrevious
+          : const <String, dynamic>{};
       final attempts = previous['attempts'];
       final wrongCount = previous['wrongCount'];
 
@@ -217,7 +220,7 @@ class QuestionRepository {
     });
   }
 
-  CollectionReference> _progress(String userId) =>
+  _progress(String userId) =>
       _firestore.collection('users').doc(userId).collection('questionProgress');
 
   String _requireUserId() {
