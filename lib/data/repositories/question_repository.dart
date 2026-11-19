@@ -11,8 +11,23 @@ class QuestionReviewEntry {
     required this.lastWrongAnswerIndex,
   });
 
+
   final Question question;
   final int lastWrongAnswerIndex;
+}
+
+class QuestionHistoryEntry {
+  const QuestionHistoryEntry({
+    required this.question,
+    required this.attempts,
+    required this.wrongCount,
+  });
+
+  final Question question;
+  final int attempts;
+  final int wrongCount;
+
+  int get correctCount => attempts - wrongCount;
 }
 
 class QuestionRepository {
@@ -90,6 +105,55 @@ class QuestionRepository {
         ),
       );
     }
+    return entries;
+  }
+
+  Future<List<QuestionHistoryEntry>> fetchQuestionHistory() async {
+    final userId = _requireUserId();
+
+    final progress = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('questionProgress')
+        .get();
+
+    if (progress.docs.isEmpty) return const [];
+
+    final ids = progress.docs.map((document) => document.id).toList();
+    final questions = await fetchQuestionsByIds(ids);
+
+    final questionsById = {
+      for (final question in questions) question.id: question,
+    };
+
+    final entries = <QuestionHistoryEntry>[];
+
+    for (final document in progress.docs) {
+      final question = questionsById[document.id];
+
+      if (question == null) continue;
+
+      final data = document.data();
+      final attempts = data['attempts'];
+      final wrongCount = data['wrongCount'];
+
+      if (attempts is! int ||
+          wrongCount is! int ||
+          attempts <= 0 ||
+          wrongCount < 0 ||
+          wrongCount > attempts) {
+        continue;
+      }
+
+      entries.add(
+        QuestionHistoryEntry(
+          question: question,
+          attempts: attempts,
+          wrongCount: wrongCount,
+        ),
+      );
+    }
+
     return entries;
   }
 

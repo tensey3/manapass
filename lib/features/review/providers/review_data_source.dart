@@ -78,8 +78,9 @@ class FirestoreReviewDataSource implements ReviewDataSource {
   @override
   Future<ReviewData> load() async {
     final entries = await _questionRepository.fetchQuestionsToReview();
+    final history = await _questionRepository.fetchQuestionHistory();
     return ReviewData(
-      weakAreas: const [],
+      weakAreas: _buildWeakAreas(history),
       wrong: [
         for (final entry in entries)
           WrongQuestion(
@@ -92,5 +93,30 @@ class FirestoreReviewDataSource implements ReviewDataSource {
           ),
       ],
     );
+  }
+  List<WeakArea> _buildWeakAreas(List<QuestionHistoryEntry> history) {
+    final totals = <String, int>{};
+    final corrects = <String, int>{};
+
+    for (final entry in history) {
+      final category = '${entry.question.category}・${entry.question.topic}';
+
+      totals[category] = (totals[category] ?? 0) + entry.attempts;
+      corrects[category] =
+          (corrects[category] ?? 0) + entry.correctCount;
+    }
+
+    final areas = [
+      for (final category in totals.keys)
+        WeakArea(
+          category: category,
+          correct: corrects[category] ?? 0,
+          total: totals[category]!,
+        ),
+    ];
+
+    areas.sort((a, b) => a.accuracy.compareTo(b.accuracy));
+
+    return areas;
   }
 }
