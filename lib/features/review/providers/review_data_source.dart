@@ -89,7 +89,7 @@ class FirestoreReviewDataSource implements ReviewDataSource {
             category: '${entry.question.category}・${entry.question.subject}', // topic -> subject
             text: entry.question.questionText, // text -> questionText
             userChoice: entry.question.options[entry.lastWrongAnswerIndex], // choices -> options
-            correctAnswer: entry.question.options[entry.correctIndex], // answerIndex -> correctIndex
+            correctAnswer: entry.question.options[entry.question.correctIndex], // answerIndex -> correctIndex
             explanation: entry.question.explanation,
           ),
       ],
