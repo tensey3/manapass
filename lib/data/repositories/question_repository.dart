@@ -8,12 +8,8 @@ final questionRepositoryProvider = Provider<QuestionRepository>((ref) {
   return QuestionRepository();
 });
 
-<<<<<<< HEAD
 // 復習用のデータ構造
 class ReviewEntry {
-=======
-
->>>>>>> feature
   final Question question;
   final int lastWrongAnswerIndex;
   ReviewEntry({required this.question, required this.lastWrongAnswerIndex});
@@ -141,10 +137,6 @@ class QuestionRepository {
     return entries;
   }
 
-<<<<<<< HEAD
-  // ⑦ 解答を記録する（進捗画面と復習画面がこの記録を使う）
-  // users/{uid}/questionProgress/{問題ID} に、解いた回数・間違えた回数・復習が必要かを保存
-=======
   Future<List<QuestionHistoryEntry>> fetchQuestionHistory() async {
     final userId = _requireUserId();
 
@@ -194,7 +186,8 @@ class QuestionRepository {
     return entries;
   }
 
->>>>>>> feature
+  // ⑦ 解答を記録する（進捗画面と復習画面がこの記録を使う）
+  // users/{uid}/questionProgress/{問題ID} に、解いた回数・間違えた回数・復習が必要かを保存
   Future<void> recordAnswer(Question question, int selectedIndex) async {
     if (selectedIndex < 0 || selectedIndex >= question.choices.length) {
       throw ArgumentError.value(selectedIndex, 'selectedIndex');
@@ -224,7 +217,7 @@ class QuestionRepository {
     });
   }
 
-  CollectionReference<Map<String, dynamic>> _progress(String userId) =>
+  CollectionReference> _progress(String userId) =>
       _firestore.collection('users').doc(userId).collection('questionProgress');
 
   String _requireUserId() {
