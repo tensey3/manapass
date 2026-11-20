@@ -18,7 +18,6 @@ import '../../features/vocab/vocab_routes.dart'; // ← vocabRoute を使うた�
 import '../../features/question/screens/random_quiz_screen.dart';
 import '../../features/question/screens/mock_exam_screen.dart';
 import '../../features/question/screens/photo_add_screen.dart';
-import '../../data/repositories/question_repository.dart';
 import '../../features/review/providers/review_data_source.dart';
 import '../shell/app_shell.dart';
 import 'routes.dart';
@@ -65,18 +64,14 @@ final appRouter = GoRouter(
         ),
         GoRoute(
           path: Routes.review,
-          builder: (context, state) => Consumer(
-            builder: (context, ref, _) => ReviewScreen(
-              dataSource: FirestoreReviewDataSource(
-                ref.watch(questionRepositoryProvider),
-              ),
-              onRetryAll: (ids) {
-                context.push(Routes.randomQuiz, extra: ids);
-              },
-              onRetryOne: (id) {
-                context.push(Routes.randomQuiz, extra: [id]);
-              },
-            ),
+          builder: (context, state) => ReviewScreen(
+            dataSource: FirestoreReviewDataSource(),
+            onRetryAll: (ids) {
+              context.push(Routes.randomQuiz, extra: ids);
+            },
+            onRetryOne: (id) {
+              context.push(Routes.randomQuiz, extra: [id]);
+            },
           ),
         ),
         GoRoute(

@@ -16,8 +16,10 @@ class ReviewController extends ChangeNotifier {
     notifyListeners();
     try {
       data = await _source.load();
-    } catch (e) {
+    } catch (e, st) {
       error = e;
+      debugPrint('ReviewController.load error: $e');
+      debugPrint('ReviewController.load stack: $st');
     } finally {
       loading = false;
       notifyListeners();

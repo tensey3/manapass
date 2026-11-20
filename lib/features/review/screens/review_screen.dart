@@ -57,23 +57,32 @@ class _ReviewScreenState extends State<ReviewScreen> {
         }
         if (_c.error != null && _c.data == null) {
           return Center(
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Text('読み込みに失敗しました\n${_c.error}', textAlign: TextAlign.center),
-              TextButton(onPressed: _c.load, child: const Text('再読み込み')),
-            ]),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '読み込みに失敗しました\n${_c.error}',
+                  textAlign: TextAlign.center,
+                ),
+                TextButton(
+                  onPressed: _c.load,
+                  child: const Text('再読み込み'),
+                ),
+              ],
+            ),
           );
         }
         final d = _c.data!;
         final t = Theme.of(context).textTheme;
         // 正答率の低い順に、苦手な分野を3つまで表示する
-        final weakAreas =
-        ([...d.weakAreas]..sort((a, b) => a.accuracy.compareTo(b.accuracy)))
+        final weakAreas = ([...d.weakAreas]
+          ..sort((a, b) => a.accuracy.compareTo(b.accuracy)))
             .take(3)
             .toList();
         // 絞り込み適用後の「間違えた問題」。まとめて解き直す対象もこれ。
         final visible = _filter == null
             ? d.wrong
-            : d.wrong.where((q) => q.category == _filter).toList();
+            : d.wrong.where((q) => q.filterKey == _filter).toList();
 
         return RefreshIndicator(
           onRefresh: _c.load,
@@ -86,13 +95,17 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 crossAxisAlignment: CrossAxisAlignment.baseline,
                 textBaseline: TextBaseline.alphabetic,
                 children: [
-                  Text('復習',
-                      style: t.headlineMedium
-                          ?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(
+                    '復習',
+                    style: t.headlineMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(width: 10),
-                  Text('${d.wrong.length}問',
-                      style: t.bodyMedium
-                          ?.copyWith(color: Colors.grey.shade600)),
+                  Text(
+                    '${d.wrong.length}問',
+                    style: t.bodyMedium
+                        ?.copyWith(color: Colors.grey.shade600),
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -102,7 +115,8 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 onPressed: widget.onRetryAll == null
                     ? null
                     : () => widget.onRetryAll!(
-                    visible.map((q) => q.id).toList()),
+                  visible.map((q) => q.id.toString()).toList(),
+                ),
               ),
               const SizedBox(height: 24),
               if (d.wrong.isEmpty && weakAreas.isEmpty)
@@ -112,16 +126,18 @@ class _ReviewScreenState extends State<ReviewScreen> {
                 ),
               // No.11〜20 苦手分野
               if (weakAreas.isNotEmpty) ...[
-                Text('苦手分野',
-                    style: t.titleSmall
-                        ?.copyWith(fontWeight: FontWeight.bold)),
+                Text(
+                  '苦手分野',
+                  style: t.titleSmall
+                      ?.copyWith(fontWeight: FontWeight.bold),
+                ),
                 const SizedBox(height: 10),
                 for (final a in weakAreas) ...[
                   WeakAreaCard(
                     area: a,
                     selected: _filter == a.category,
-                    onTap: () => setState(() =>
-                    _filter = _filter == a.category ? null : a.category),
+                    onTap: () => setState(() => _filter =
+                    _filter == a.category ? null : a.category),
                   ),
                   const SizedBox(height: 10),
                 ],
@@ -129,25 +145,31 @@ class _ReviewScreenState extends State<ReviewScreen> {
               ],
               // No.21〜30 間違えた問題
               if (d.wrong.isNotEmpty) ...[
-                Row(children: [
-                  Text('間違えた問題',
+                Row(
+                  children: [
+                    Text(
+                      '間違えた問題',
                       style: t.titleSmall
-                          ?.copyWith(fontWeight: FontWeight.bold)),
-                  const Spacer(),
-                  if (_filter != null)
-                    InputChip(
-                      label: Text('$_filter で絞り込み中'),
-                      onDeleted: () => setState(() => _filter = null),
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                ]),
+                    const Spacer(),
+                    if (_filter != null)
+                      InputChip(
+                        label: Text('$_filter で絞り込み中'),
+                        onDeleted: () => setState(() => _filter = null),
+                      ),
+                  ],
+                ),
                 const SizedBox(height: 10),
                 if (visible.isEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),
                     child: Center(
-                      child: Text('この分野の間違えた問題はありません',
-                          style: t.bodyMedium
-                              ?.copyWith(color: Colors.grey.shade600)),
+                      child: Text(
+                        'この分野の間違えた問題はありません',
+                        style: t.bodyMedium
+                            ?.copyWith(color: Colors.grey.shade600),
+                      ),
                     ),
                   ),
                 for (final q in visible) ...[
@@ -155,7 +177,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     question: q,
                     onTap: widget.onRetryOne == null
                         ? null
-                        : () => widget.onRetryOne!(q.id),
+                        : () => widget.onRetryOne!(q.id.toString()),
                   ),
                   const SizedBox(height: 12),
                 ],
