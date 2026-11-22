@@ -1,0 +1,10 @@
+単語の意味（assets/dict/words.json）
+  JMdict (http://www.edrdg.org/jmdict/j_jmdict.html)
+  © Electronic Dictionary Research and Development Group (EDRDG)
+  License: Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)
+  https://www.edrdg.org/edrdg/licence.html
+  assets/dict/words.json は JMdict から、問題に出てくる単語だけを取り出して意味を短くしたもの（同じ CC BY-SA 4.0）。
+
+ふりがな（assets/questions/*.json の "ruby"）
+  fugashi + unidic-lite（UniDic, BSD License）で自動で付けた。
+  作り方: tool/questions/add_furigana.py

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../data/vocab_data.dart';
+import '../providers/dictionary_controller.dart';
 import '../providers/lookup_controller.dart';
 import '../providers/vocab_detail_controller.dart';
 import '../providers/wordbook_controller.dart';
@@ -67,8 +68,10 @@ class _WordbookScreenState extends ConsumerState<WordbookScreen> {
             final searching = _query.trim().isNotEmpty;
             final saved = all.where((w) => wordMatches(w, _query)).toList();
             final savedTexts = {for (final w in all) w.text};
+            final dictionary = ref.watch(dictionaryProvider).valueOrNull ?? glossary;
             final fromGlossary = searching
-                ? glossary.values.where((w) => !savedTexts.contains(w.text) && wordMatches(w, _query)).toList()
+                // 辞書は約2,000語あるので、多すぎないように最初の30語だけ出す
+                ? dictionary.values.where((w) => !savedTexts.contains(w.text) && wordMatches(w, _query)).take(30).toList()
                 : const <Word>[];
 
             return VocabPage(
@@ -100,7 +103,7 @@ class _WordbookScreenState extends ConsumerState<WordbookScreen> {
                   if (fromGlossary.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     const Text(
-                      '用語集から（押すと単語帳に追加できます）',
+                      '辞書から（押すと単語帳に追加できます）',
                       style: TextStyle(fontSize: 13, fontWeight: FontWeight.w900, color: VocabStyle.muted),
                     ),
                     const SizedBox(height: 10),

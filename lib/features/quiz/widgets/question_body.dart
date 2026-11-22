@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/furigana_text.dart';
 import '../../../data/models/question.dart';
+import '../../vocab/providers/vocab_detail_controller.dart';
 import 'option_button.dart';
+import 'term_popup.dart';
 
 /// 問題文：出典・文章・プログラム・図（画像）を上から順に出す。
-class QuestionBody extends StatelessWidget {
+/// 文章はふりがな付き（設定でオン・オフ）。点線の単語を押すと、読みと意味が出る。
+class QuestionBody extends ConsumerWidget {
   const QuestionBody({super.key, required this.question});
 
   final Question question;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(vocabSettingsProvider);
     // 古い形のデータ（blocks がない）は、問題文の文字だけ出す
     final blocks = question.blocks.isNotEmpty
         ? question.blocks
@@ -30,6 +36,13 @@ class QuestionBody extends StatelessWidget {
             QuestionImage(assetPath: block.assetPath!)
           else if (block.isCode)
             _CodeBlock(text: block.text)
+          else if (block.ruby.isNotEmpty)
+            FuriganaText(
+              block.ruby,
+              showFurigana: settings.furigana,
+              rubyScale: settings.rubyScale,
+              onTapWord: (word) => showTermPopup(context, word),
+            )
           else
             Text(block.text, style: const TextStyle(fontSize: 17, height: 1.7)),
           const SizedBox(height: 14),
@@ -40,7 +53,8 @@ class QuestionBody extends StatelessWidget {
 }
 
 /// 解答群：文章の選択肢、または「解答群の画像 + 記号ボタン」。
-class ChoicesView extends StatelessWidget {
+/// 選択肢の単語は、答えたあと（もう選べないとき）だけ押せる（選ぶときにじゃまにならないように）。
+class ChoicesView extends ConsumerWidget {
   const ChoicesView({super.key, required this.question, required this.stateOf, this.onSelect});
 
   final Question question;
@@ -48,7 +62,9 @@ class ChoicesView extends StatelessWidget {
   final ValueChanged<int>? onSelect; // null = もう選べない
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(vocabSettingsProvider);
+    final ruby = question.choicesRuby;
     final count = question.choices.length;
     if (question.choicesImagePath != null) {
       return Column(
@@ -82,6 +98,15 @@ class ChoicesView extends StatelessWidget {
             child: OptionButton(
               label: choiceLabel(i),
               text: question.choices[i],
+              content: i < ruby.length && ruby[i].isNotEmpty
+                  ? FuriganaText(
+                      ruby[i],
+                      size: 16,
+                      showFurigana: settings.furigana,
+                      rubyScale: settings.rubyScale,
+                      onTapWord: onSelect == null ? (word) => showTermPopup(context, word) : null,
+                    )
+                  : null,
               state: stateOf(i),
               onTap: onSelect == null ? null : () => onSelect!(i),
             ),

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testflutter/data/models/question.dart';
+import 'package:testflutter/features/vocab/data/vocab_data.dart';
+import 'package:testflutter/features/vocab/providers/dictionary_controller.dart';
 import 'package:testflutter/features/vocab/providers/lookup_controller.dart';
 import 'package:testflutter/features/vocab/providers/related_questions_controller.dart';
 import 'package:testflutter/features/vocab/screens/vocab_detail_screen.dart';
@@ -18,7 +20,11 @@ final _questions = [
 ];
 
 Widget _app(Widget child, {List<Question>? questions}) => ProviderScope(
-      overrides: [vocabQuestionsProvider.overrideWith((ref) async => questions ?? _questions)],
+      overrides: [
+        vocabQuestionsProvider.overrideWith((ref) async => questions ?? _questions),
+        // 辞書のファイルは読まずに、用語集だけで確かめる
+        dictionaryProvider.overrideWith((ref) async => glossary),
+      ],
       child: MaterialApp(home: Scaffold(body: child)),
     );
 
@@ -127,7 +133,7 @@ void main() {
   });
 
   group('単語帳', () {
-    testWidgets('検索すると、単語帳にない用語集の単語も出る', (tester) async {
+    testWidgets('検索すると、単語帳にない辞書の単語も出る', (tester) async {
       await tester.pumpWidget(_app(const WordbookScreen()));
       await tester.pumpAndSettle();
       expect(find.text('ガントチャート'), findsNothing);
@@ -135,7 +141,7 @@ void main() {
       await tester.enterText(find.byType(TextField), 'ガント');
       await tester.pumpAndSettle();
       expect(find.text('ガントチャート'), findsOneWidget);
-      expect(find.textContaining('用語集から'), findsOneWidget);
+      expect(find.textContaining('辞書から'), findsOneWidget);
     });
 
     testWidgets('単語帳が空でも、検索できる', (tester) async {

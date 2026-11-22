@@ -1,7 +1,45 @@
+/// ふりがな付きの文の1単語（tool/questions/add_furigana.py で作る）。
+class RubyToken {
+  const RubyToken({required this.text, this.parts, this.key});
+
+  /// 文字（例：取り出す）
+  final String text;
+
+  /// 漢字の部分ごとの読み（例：[(取, と), (り, null), (出, だ), (す, null)]）。漢字がなければ null。
+  final List<(String, String?)>? parts;
+
+  /// タップで意味を出すときの辞書の見出し（例：取り出す）。出さない単語は null。
+  final String? key;
+
+  static RubyToken? fromMap(Object? raw) {
+    if (raw is! Map) return null;
+    final r = raw['r'];
+    return RubyToken(
+      text: raw['t']?.toString() ?? '',
+      parts: r is List
+          ? [
+              for (final p in r)
+                if (p is List && p.isNotEmpty) (p[0].toString(), p.length > 1 ? p[1]?.toString() : null),
+            ]
+          : null,
+      key: raw['k']?.toString(),
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        't': text,
+        if (parts != null) 'r': [for (final (t, r) in parts!) [t, r]],
+        if (key != null) 'k': key,
+      };
+
+  static List<RubyToken> listFrom(Object? raw) =>
+      raw is List ? raw.map(fromMap).whereType<RubyToken>().toList() : const [];
+}
+
 /// 問題文の1かたまり：文章・プログラム・図（画像）。
 /// IPA の PDF から作った問題データ（assets/questions/*.json）の "blocks" の1つ。
 class QuestionBlock {
-  const QuestionBlock({required this.type, this.text = '', this.src});
+  const QuestionBlock({required this.type, this.text = '', this.src, this.ruby = const []});
 
   /// 'text'（文章） / 'code'（プログラム。字下げをそのまま表示する） / 'image'（図・表）
   final String type;
@@ -9,6 +47,9 @@ class QuestionBlock {
 
   /// 画像のファイル名（assets/questions/img/ の中）
   final String? src;
+
+  /// 文章のふりがな（単語ごと）。ない（古いデータ・プログラム・画像）ときは空。
+  final List<RubyToken> ruby;
 
   bool get isImage => type == 'image';
   bool get isCode => type == 'code';
@@ -23,6 +64,7 @@ class QuestionBlock {
       type: type,
       text: raw['text']?.toString() ?? '',
       src: raw['src']?.toString(),
+      ruby: RubyToken.listFrom(raw['ruby']),
     );
   }
 
@@ -30,6 +72,7 @@ class QuestionBlock {
         'type': type,
         if (text.isNotEmpty) 'text': text,
         if (src != null) 'src': src,
+        if (ruby.isNotEmpty) 'ruby': ruby.map((t) => t.toMap()).toList(),
       };
 }
 
@@ -58,6 +101,9 @@ class Question {
   /// このときは choices の中身が空で、ア・イ・ウ… のボタンだけを出す。
   final String? choicesImage;
 
+  /// 選択肢のふりがな（choices と同じ順）。ないときは空。
+  final List<List<RubyToken>> choicesRuby;
+
   String? get choicesImagePath => choicesImage == null ? null : 'assets/questions/img/$choicesImage';
 
   // --- 互換性のための Getter ---
@@ -84,6 +130,7 @@ class Question {
     this.number,
     this.blocks = const [],
     this.choicesImage,
+    this.choicesRuby = const [],
   })  : question = question ?? questionText ?? '',
         choices = choices ?? options ?? const [],
         answerIndex = answerIndex ?? correctIndex ?? 0,
@@ -152,6 +199,9 @@ class Question {
       number: _asNullableInt(map['number']),
       blocks: blocks,
       choicesImage: _asNullableString(map['choicesImage']),
+      choicesRuby: map['choicesRuby'] is List
+          ? [for (final c in map['choicesRuby'] as List) RubyToken.listFrom(c)]
+          : const [],
     );
   }
 
@@ -195,6 +245,7 @@ class Question {
       if (number != null) 'number': number,
       if (blocks.isNotEmpty) 'blocks': blocks.map((b) => b.toMap()).toList(),
       if (choicesImage != null) 'choicesImage': choicesImage,
+      if (choicesRuby.isNotEmpty) 'choicesRuby': [for (final c in choicesRuby) c.map((t) => t.toMap()).toList()],
     };
   }
 }

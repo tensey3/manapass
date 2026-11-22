@@ -22,10 +22,11 @@ const _wrongColor = Color(0xFFE5484D);
 
 /// 文章の選択肢（ア + 文）。
 class OptionButton extends StatelessWidget {
-  const OptionButton({super.key, required this.label, required this.text, required this.state, this.onTap});
+  const OptionButton({super.key, required this.label, required this.text, required this.state, this.onTap, this.content});
 
   final String label;
   final String text;
+  final Widget? content; // ふりがな付きの文など。null なら text をそのまま出す
   final ChoiceState state;
   final VoidCallback? onTap; // null = もう変えられない
 
@@ -50,7 +51,7 @@ class OptionButton extends StatelessWidget {
                 children: [
                   _LabelCircle(label: label, color: circle, textColor: circleText),
                   const SizedBox(width: 14),
-                  Expanded(child: Text(text, style: const TextStyle(fontSize: 16, height: 1.5))),
+                  Expanded(child: content ?? Text(text, style: const TextStyle(fontSize: 16, height: 1.5))),
                   if (icon != null) ...[const SizedBox(width: 8), Icon(icon, color: border, size: 26)],
                 ],
               ),

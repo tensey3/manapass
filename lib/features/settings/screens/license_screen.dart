@@ -18,14 +18,18 @@ class LicenseScreen extends StatelessWidget {
         const _Section(
           icon: Icons.menu_book_rounded,
           title: '過去問題',
-          body: '出典：独立行政法人 情報処理推進機構（IPA）基本情報技術者試験 公開問題。内容を変えた問題には「改変」と表示します。',
-          note: '今はサンプル問題のみです（IPAの問題ではありません）。',
+          body: '出典：独立行政法人 情報処理推進機構（IPA）基本情報技術者試験 公開問題（令和5〜8年度）・サンプル問題。'
+              'それぞれの問題に出典を表示しています。内容を変えた問題には「改変」と表示します。',
         ),
         const SizedBox(height: 14),
         const _Section(
           icon: Icons.translate_rounded,
           title: '辞書データ',
-          body: '辞書データを使うときは、ここに出典とライセンスを表示します。',
+          body: '単語の意味（「一般的な意味」と表示されるもの）は JMdict を使っています。\n'
+              'JMdict © Electronic Dictionary Research and Development Group (EDRDG)\n'
+              'ライセンス：Creative Commons Attribution-ShareAlike 4.0（CC BY-SA 4.0）\n'
+              'https://www.edrdg.org/edrdg/licence.html\n'
+              'ふりがなは UniDic（BSD ライセンス）を使って自動で付けているため、読みが違うことがあります。',
         ),
         const SizedBox(height: 14),
         _Section(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:testflutter/data/models/question.dart';
 import 'package:testflutter/data/repositories/question_repository.dart';
 import 'package:testflutter/features/question/providers/question_list_controller.dart';
@@ -16,6 +17,7 @@ void main() {
   late List<Question> all;
 
   setUpAll(() async {
+    SharedPreferences.setMockInitialValues({});
     // テストではネットからフォントを読めないので、プログラムもふつうの字で出す
     codeTextStyle = () => const TextStyle(fontSize: 15, height: 1.6);
     all = await QuestionRepository(null, null, rootBundle).getAllQuestions();
@@ -51,6 +53,23 @@ void main() {
       }
     });
   }
+
+  testWidgets('ふりがなが出て、点線の単語を押すと意味が出る', (tester) async {
+    final q = all.firstWhere((q) => q.id == '2025r07_a_02'); // 浮動小数点形式で表現された…
+    await show(tester, const Size(390, 844), QuestionAnswerScreen(title: 'テスト', questions: [q]));
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+    await tester.pump();
+    expect(find.text('ふどう'), findsWidgets); // 浮動 のふりがな
+    await tester.tap(find.text('浮動').first);
+    // 辞書のファイルを読み込むのを待つ
+    for (var i = 0; i < 10 && find.text('floating point').evaluate().isEmpty; i++) {
+      await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 100)));
+      await tester.pump(const Duration(milliseconds: 100));
+    }
+    expect(find.text('浮動小数点'), findsOneWidget); // ポップアップの見出し
+    expect(find.text('floating point'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('問題一覧：科目A と 科目B の回が出る', (tester) async {
     await show(

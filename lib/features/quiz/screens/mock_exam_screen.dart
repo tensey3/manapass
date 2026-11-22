@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/question.dart';
 import '../../../data/repositories/question_repository.dart';
+import '../widgets/furigana_toggle_button.dart';
 import '../widgets/option_button.dart';
 import '../widgets/question_body.dart';
 import 'quiz_result_screen.dart';
@@ -213,6 +214,7 @@ class _MockExamSessionScreenState extends ConsumerState<MockExamSessionScreen> {
                           color: hurry ? const Color(0xFFE5484D) : AppColors.textStrong,
                         )),
                     const SizedBox(width: 8),
+                    const FuriganaToggleButton(),
                     TextButton(onPressed: _openList, child: const Text('一覧')),
                   ],
                 ),

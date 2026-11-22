@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/vocab_data.dart';
+import 'dictionary_controller.dart';
 
 /// 単語帳に入っている単語（追加した順）。端末に保存されるので、アプリを閉じても残る。
 final wordbookProvider = AsyncNotifierProvider<WordbookController, List<String>>(WordbookController.new);
@@ -26,10 +27,17 @@ class WordbookController extends AsyncNotifier<List<String>> {
   }
 }
 
-/// 単語帳の単語を、用語集の情報つきで。
+/// 単語帳の単語を、辞書（用語集 + 一般の辞書）の情報つきで。
 final savedWordsProvider = Provider<AsyncValue<List<Word>>>((ref) {
-  return ref.watch(wordbookProvider).whenData((texts) => [
-        for (final t in texts)
-          if (glossary[t] != null) glossary[t]!,
-      ]);
+  final dictionary = ref.watch(dictionaryProvider);
+  final saved = ref.watch(wordbookProvider);
+  if (dictionary is AsyncError) return AsyncError(dictionary.error!, dictionary.stackTrace!);
+  if (saved is AsyncError) return AsyncError(saved.error!, saved.stackTrace!);
+  final words = dictionary.valueOrNull;
+  final texts = saved.valueOrNull;
+  if (words == null || texts == null) return const AsyncLoading();
+  return AsyncData([
+    for (final t in texts)
+      if (words[t] != null) words[t]!,
+  ]);
 });

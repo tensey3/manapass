@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:testflutter/data/models/question.dart';
+import 'package:testflutter/features/vocab/data/vocab_data.dart';
 
 void main() {
   group('正解の番号', () {
@@ -60,6 +61,42 @@ void main() {
         }
       }
       expect(count, greaterThan(100));
+    });
+
+    test('ふりがなの単語をつなげると元の文と同じで、押せる単語は全部意味がある', () {
+      final dict = jsonDecode(File('assets/dict/words.json').readAsStringSync()) as Map<String, dynamic>;
+      var tokens = 0;
+      var links = 0;
+      for (final exam in exams) {
+        final list = jsonDecode(File('assets/questions/${exam['file']}').readAsStringSync()) as List;
+        for (final raw in list.cast<Map<String, dynamic>>()) {
+          final q = Question.fromMap(raw);
+          void check(List<RubyToken> ruby, String text) {
+            if (ruby.isEmpty) return;
+            expect(ruby.map((t) => t.text).join(), text, reason: '${q.id}: ふりがなで文字が変わった');
+            for (final t in ruby) {
+              tokens++;
+              if (t.parts != null) {
+                expect(t.parts!.map((p) => p.$1).join(), t.text, reason: '${q.id}: ${t.text}');
+              }
+              if (t.key != null) {
+                links++;
+                expect(dict.containsKey(t.key) || glossary.containsKey(t.key), isTrue,
+                    reason: '${q.id}: ${t.key} の意味がない');
+              }
+            }
+          }
+
+          for (final b in q.blocks) {
+            check(b.ruby, b.text);
+          }
+          for (var i = 0; i < q.choicesRuby.length; i++) {
+            check(q.choicesRuby[i], q.choices[i]);
+          }
+        }
+      }
+      expect(tokens, greaterThan(1000));
+      expect(links, greaterThan(1000));
     });
 
     test('問題の図・解答群の画像が全部ある', () {

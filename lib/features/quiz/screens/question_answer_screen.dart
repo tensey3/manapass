@@ -7,6 +7,7 @@ import '../../../data/repositories/question_repository.dart';
 import '../../home/providers/home_controller.dart';
 import '../../question/providers/question_list_controller.dart';
 import '../widgets/judge_banner.dart';
+import '../widgets/furigana_toggle_button.dart';
 import '../widgets/option_button.dart';
 import '../widgets/question_body.dart';
 import 'quiz_result_screen.dart';
@@ -140,6 +141,8 @@ class _QuestionAnswerScreenState extends ConsumerState<QuestionAnswerScreen> {
                   ),
                   Text('${_index + 1} / $total',
                       style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textMuted)),
+                  const SizedBox(width: 10),
+                  const FuriganaToggleButton(),
                 ],
               ),
             ),
