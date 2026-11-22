@@ -1,0 +1,84 @@
+{
+ "exams": [
+  {
+   "id": "2026r08_a",
+   "file": "2026r08_a.json",
+   "year": 2026,
+   "subject": "科目A",
+   "title": "令和8年度 公開問題",
+   "count": 20
+  },
+  {
+   "id": "2026r08_b",
+   "file": "2026r08_b.json",
+   "year": 2026,
+   "subject": "科目B",
+   "title": "令和8年度 公開問題",
+   "count": 6
+  },
+  {
+   "id": "2025r07_a",
+   "file": "2025r07_a.json",
+   "year": 2025,
+   "subject": "科目A",
+   "title": "令和7年度 公開問題",
+   "count": 20
+  },
+  {
+   "id": "2025r07_b",
+   "file": "2025r07_b.json",
+   "year": 2025,
+   "subject": "科目B",
+   "title": "令和7年度 公開問題",
+   "count": 6
+  },
+  {
+   "id": "2024r06_a",
+   "file": "2024r06_a.json",
+   "year": 2024,
+   "subject": "科目A",
+   "title": "令和6年度 公開問題",
+   "count": 20
+  },
+  {
+   "id": "2024r06_b",
+   "file": "2024r06_b.json",
+   "year": 2024,
+   "subject": "科目B",
+   "title": "令和6年度 公開問題",
+   "count": 6
+  },
+  {
+   "id": "2023r05_a",
+   "file": "2023r05_a.json",
+   "year": 2023,
+   "subject": "科目A",
+   "title": "令和5年度 公開問題",
+   "count": 20
+  },
+  {
+   "id": "2023r05_b",
+   "file": "2023r05_b.json",
+   "year": 2023,
+   "subject": "科目B",
+   "title": "令和5年度 公開問題",
+   "count": 6
+  },
+  {
+   "id": "2022sample_a",
+   "file": "2022sample_a.json",
+   "year": 2022,
+   "subject": "科目A",
+   "title": "サンプル問題",
+   "count": 60
+  },
+  {
+   "id": "2022sample_b",
+   "file": "2022sample_b.json",
+   "year": 2022,
+   "subject": "科目B",
+   "title": "サンプル問題",
+   "count": 20
+  }
+ ]
+}

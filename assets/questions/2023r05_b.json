@@ -1,0 +1,212 @@
+[
+ {
+  "id": "2023r05_b_01",
+  "exam": "2023r05_b",
+  "year": 2023,
+  "subject": "科目B",
+  "number": 1,
+  "question": "次のプログラム中の ［a］ と ［b］ に入れる正しい答えの組合せを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n関数findPrimeNumbers は，引数で与えられた整数以下の，全ての素数だけを格納した配列を返す関数である。ここで，引数に与える整数は2 以上である。\n〔プログラム〕\n○整数型の配列: findPrimeNumbers(整数型: maxNum)\n  整数型の配列: pnList ← {}  // 要素数0の配列\n  整数型: i, j\n  論理型: divideFlag\n  for (i を 2 から ［a］ まで 1 ずつ増やす)\n    divideFlag ← true\n    /* iの正の平方根の整数部分が2未満のときは，繰返し処理を実行しない */\n    for (j を 2 から iの正の平方根の整数部分 まで 1 ずつ増やす)  // α\n      if ( ［b］ )\n          divideFlag ← false\n          αの行から始まる繰返し処理を終了する\n      endif\n    endfor\n    if (divideFlag が true と等しい)\n      pnListの末尾 に iの値 を追加する\n    endif\n  endfor\n  return pnList",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "次のプログラム中の ［a］ と ［b］ に入れる正しい答えの組合せを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n関数findPrimeNumbers は，引数で与えられた整数以下の，全ての素数だけを格納した配列を返す関数である。ここで，引数に与える整数は2 以上である。\n〔プログラム〕"
+   },
+   {
+    "type": "code",
+    "text": "○整数型の配列: findPrimeNumbers(整数型: maxNum)\n  整数型の配列: pnList ← {}  // 要素数0の配列\n  整数型: i, j\n  論理型: divideFlag\n  for (i を 2 から ［a］ まで 1 ずつ増やす)\n    divideFlag ← true\n    /* iの正の平方根の整数部分が2未満のときは，繰返し処理を実行しない */\n    for (j を 2 から iの正の平方根の整数部分 まで 1 ずつ増やす)  // α\n      if ( ［b］ )\n          divideFlag ← false\n          αの行から始まる繰返し処理を終了する\n      endif\n    endfor\n    if (divideFlag が true と等しい)\n      pnListの末尾 に iの値 を追加する\n    endif\n  endfor\n  return pnList"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2023r05_b_01_choices.png",
+  "answerIndex": 0,
+  "source": "出典：令和5年度 基本情報技術者試験 公開問題 科目B 問1",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ },
+ {
+  "id": "2023r05_b_02",
+  "exam": "2023r05_b",
+  "year": 2023,
+  "subject": "科目B",
+  "number": 2,
+  "question": "次の記述中の［　］ に入れる正しい答えを，解答群の中から選べ。\n次のプログラムにおいて，手続proc2 を呼び出すと，［　］ の順に出力される。\n〔プログラム〕\n○proc1()\n  \"A\" を出力する\n  proc3()\n○proc2()\n  proc3()\n  \"B\" を出力する\n  proc1()\n○proc3()\n  \"C\" を出力する",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "次の記述中の［　］ に入れる正しい答えを，解答群の中から選べ。\n次のプログラムにおいて，手続proc2 を呼び出すと，［　］ の順に出力される。\n〔プログラム〕"
+   },
+   {
+    "type": "code",
+    "text": "○proc1()\n  \"A\" を出力する\n  proc3()\n○proc2()\n  proc3()\n  \"B\" を出力する\n  proc1()\n○proc3()\n  \"C\" を出力する"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2023r05_b_02_choices.png",
+  "answerIndex": 7,
+  "source": "出典：令和5年度 基本情報技術者試験 公開問題 科目B 問2",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ },
+ {
+  "id": "2023r05_b_03",
+  "exam": "2023r05_b",
+  "year": 2023,
+  "subject": "科目B",
+  "number": 3,
+  "question": "次の記述中の［　］ に入れる正しい答えを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n次の手続sort は，大域の整数型の配列data の，引数first で与えられた要素番号から引数last で与えられた要素番号までの要素を昇順に整列する。ここで，first＜ last とする。手続sort をsort(1, 5) として呼び出すと，/*** α ***/ の行を最初に実行したときの出力は“［　］ ”となる。\n〔プログラム〕\n大域: 整数型の配列: data ← {2, 1, 3, 5, 4}\n○sort(整数型: first, 整数型: last)\n  整数型: pivot, i, j\n  pivot ← data[(first ＋ last) ÷ 2 の商]\n  i ← first\n  j ← last\n  while (true)\n    while (data[i] ＜ pivot)\n      i ← i ＋ 1\n    endwhile\n    while (pivot ＜ data[j])\n      j ← j － 1\n    endwhile\n    if (i ≧ j)\n      繰返し処理を終了する\n    endif\n    data[i]とdata[j]の値を入れ替える\n    i ← i ＋ 1\n    j ← j － 1\n  endwhile\n  dataの全要素の値を要素番号の順に空白区切りで出力する  /*** α ***/\n  if (first ＜ i － 1)\n    sort(first, i － 1)\n  endif\n  if (j ＋ 1 ＜ last)\n    sort(j ＋ 1, last)\n  endif",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "次の記述中の［　］ に入れる正しい答えを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n次の手続sort は，大域の整数型の配列data の，引数first で与えられた要素番号から引数last で与えられた要素番号までの要素を昇順に整列する。ここで，first＜ last とする。手続sort をsort(1, 5) として呼び出すと，/*** α ***/ の行を最初に実行したときの出力は“［　］ ”となる。\n〔プログラム〕"
+   },
+   {
+    "type": "code",
+    "text": "大域: 整数型の配列: data ← {2, 1, 3, 5, 4}\n○sort(整数型: first, 整数型: last)\n  整数型: pivot, i, j\n  pivot ← data[(first ＋ last) ÷ 2 の商]\n  i ← first\n  j ← last\n  while (true)\n    while (data[i] ＜ pivot)\n      i ← i ＋ 1\n    endwhile\n    while (pivot ＜ data[j])\n      j ← j － 1\n    endwhile\n    if (i ≧ j)\n      繰返し処理を終了する\n    endif\n    data[i]とdata[j]の値を入れ替える\n    i ← i ＋ 1\n    j ← j － 1\n  endwhile\n  dataの全要素の値を要素番号の順に空白区切りで出力する  /*** α ***/\n  if (first ＜ i － 1)\n    sort(first, i － 1)\n  endif\n  if (j ＋ 1 ＜ last)\n    sort(j ＋ 1, last)\n  endif"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2023r05_b_03_choices.png",
+  "answerIndex": 3,
+  "source": "出典：令和5年度 基本情報技術者試験 公開問題 科目B 問3",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ },
+ {
+  "id": "2023r05_b_04",
+  "exam": "2023r05_b",
+  "year": 2023,
+  "subject": "科目B",
+  "number": 4,
+  "question": "次の記述中の［　］ に入れる正しい答えを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n関数add は，引数で指定された正の整数value を大域の整数型の配列hashArray に格納する。格納できた場合はtrue を返し，格納できなかった場合はfalse を返す。ここで，整数value をhashArray のどの要素に格納すべきかを，関数calcHash1 及びcalcHash2 を利用して決める。\n手続test は，関数add を呼び出して，hashArray に正の整数を格納する。手続\ntest の処理が終了した直後のhashArray の内容は，［　］ である。\n〔プログラム〕\n大域: 整数型の配列: hashArray\n○論理型: add(整数型: value)\n  整数型: i ← calcHash1(value)\n  if (hashArray[i] ＝ －1)\n    hashArray[i] ← value\n    return true\n  else\n    i ← calcHash2(value)\n    if (hashArray[i] ＝ －1)\n      hashArray[i] ← value\n      return true\n    endif\n  endif\n  return false\n○整数型: calcHash1(整数型: value)\n  return (value mod hashArrayの要素数) ＋ 1\n○整数型: calcHash2(整数型: value)\n  return ((value ＋ 3) mod hashArrayの要素数) ＋ 1\n○test()\n  hashArray ← {5個の －1}\n  add(3)\n  add(18)\n  add(11)",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "次の記述中の［　］ に入れる正しい答えを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n関数add は，引数で指定された正の整数value を大域の整数型の配列hashArray に格納する。格納できた場合はtrue を返し，格納できなかった場合はfalse を返す。ここで，整数value をhashArray のどの要素に格納すべきかを，関数calcHash1 及びcalcHash2 を利用して決める。\n手続test は，関数add を呼び出して，hashArray に正の整数を格納する。手続\ntest の処理が終了した直後のhashArray の内容は，［　］ である。\n〔プログラム〕"
+   },
+   {
+    "type": "code",
+    "text": "大域: 整数型の配列: hashArray\n○論理型: add(整数型: value)\n  整数型: i ← calcHash1(value)\n  if (hashArray[i] ＝ －1)\n    hashArray[i] ← value\n    return true\n  else\n    i ← calcHash2(value)\n    if (hashArray[i] ＝ －1)\n      hashArray[i] ← value\n      return true\n    endif\n  endif\n  return false\n○整数型: calcHash1(整数型: value)\n  return (value mod hashArrayの要素数) ＋ 1\n○整数型: calcHash2(整数型: value)\n  return ((value ＋ 3) mod hashArrayの要素数) ＋ 1\n○test()\n  hashArray ← {5個の －1}\n  add(3)\n  add(18)\n  add(11)"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2023r05_b_04_choices.png",
+  "answerIndex": 3,
+  "source": "出典：令和5年度 基本情報技術者試験 公開問題 科目B 問4",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ },
+ {
+  "id": "2023r05_b_05",
+  "exam": "2023r05_b",
+  "year": 2023,
+  "subject": "科目B",
+  "number": 5,
+  "question": "次のプログラム中の ［a］ と ［b］ に入れる正しい答えの組合せを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\nコサイン類似度は，二つのベクトルの向きの類似性を測る尺度である。関数calcCosineSimilarity は，いずれも要素数がn(n≧1) である実数型の配列vector1とvector2 を受け取り，二つの配列のコサイン類似度を返す。配列vector1 が {a1,a2, …, an}，配列vector2 が {b1, b2, …, bn} のとき，コサイン類似度は次の数式で計算される。ここで，配列vector1 と配列vector2 のいずれも，全ての要素に0 が格納されていることはないものとする。\na1b1 ＋ a2b2 ＋ … ＋ anbn\n2\na1 2 ＋ a2 2 ＋ … ＋ an 2   b1 2 ＋ b2 2 ＋ … ＋ bn\n〔プログラム〕\n○実数型: calcCosineSimilarity(実数型の配列: vector1,\n                               実数型の配列: vector2)\n  実数型: similarity, numerator, denominator, temp ← 0\n  整数型: i\n  numerator ← 0\n  for (i を 1 から vector1の要素数 まで 1 ずつ増やす)\n    numerator ← numerator ＋ ［a］\n  endfor\n  for (i を 1 から vector1の要素数 まで 1 ずつ増やす)\n    temp ← temp ＋ vector1[i]の2乗\n  endfor\n  denominator ← tempの正の平方根\n  temp ← 0\n  for (i を 1 から vector2の要素数 まで 1 ずつ増やす)\n    temp ← temp ＋ vector2[i]の2乗\n  endfor\n  denominator ← ［b］\n  similarity ← numerator ÷ denominator\n  return similarity",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "次のプログラム中の ［a］ と ［b］ に入れる正しい答えの組合せを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\nコサイン類似度は，二つのベクトルの向きの類似性を測る尺度である。関数calcCosineSimilarity は，いずれも要素数がn(n≧1) である実数型の配列vector1とvector2 を受け取り，二つの配列のコサイン類似度を返す。配列vector1 が {a1,a2, …, an}，配列vector2 が {b1, b2, …, bn} のとき，コサイン類似度は次の数式で計算される。ここで，配列vector1 と配列vector2 のいずれも，全ての要素に0 が格納されていることはないものとする。\na1b1 ＋ a2b2 ＋ … ＋ anbn\n2\na1 2 ＋ a2 2 ＋ … ＋ an 2   b1 2 ＋ b2 2 ＋ … ＋ bn\n〔プログラム〕"
+   },
+   {
+    "type": "code",
+    "text": "○実数型: calcCosineSimilarity(実数型の配列: vector1,\n                               実数型の配列: vector2)\n  実数型: similarity, numerator, denominator, temp ← 0\n  整数型: i\n  numerator ← 0\n  for (i を 1 から vector1の要素数 まで 1 ずつ増やす)\n    numerator ← numerator ＋ ［a］\n  endfor\n  for (i を 1 から vector1の要素数 まで 1 ずつ増やす)\n    temp ← temp ＋ vector1[i]の2乗\n  endfor\n  denominator ← tempの正の平方根\n  temp ← 0\n  for (i を 1 から vector2の要素数 まで 1 ずつ増やす)\n    temp ← temp ＋ vector2[i]の2乗\n  endfor\n  denominator ← ［b］\n  similarity ← numerator ÷ denominator\n  return similarity"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2023r05_b_05_choices.png",
+  "answerIndex": 3,
+  "source": "出典：令和5年度 基本情報技術者試験 公開問題 科目B 問5",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ },
+ {
+  "id": "2023r05_b_06",
+  "exam": "2023r05_b",
+  "year": 2023,
+  "subject": "科目B",
+  "number": 6,
+  "question": "A 社は，放送会社や運輸会社向けに広告制作ビジネスを展開している。A 社は，人事業務の効率化を図るべく，人事業務の委託を検討することにした。A 社が委託する業務（以下，B 業務という）を図1 に示す。\n図1 B 業務\n委託先候補のC 社は，B 業務について，次のようにA 社に提案した。\n・B 業務だけに従事する専任の従業員を割り当てる。\n・B 業務では，図2 の複合機のスキャン機能を使用する。\n注1) B サーバにアクセスする際は，従業員ごとの利用者ID とパスワードが必要になる。\n図2 複合機のスキャン機能（抜粋）\nA 社は，C 社と業務委託契約を締結する前に，秘密保持契約を締結した。その後，C社に質問表を送付し，回答を受けて，業務委託での情報セキュリティリスクの評価を実施した。その結果，図3 の発見があった。\n注1)  複合機の初期設定はC 社の情報システム部だけが変更可能である。\n図3 発見事項\nそこで，A 社では，初期設定の状態のままではA 社にとって情報セキュリティリスクがあり，初期設定から変更するという対策が必要であると評価した。\n設問 対策が必要であるとA 社が評価した情報セキュリティリスクはどれか。解答群のうち，最も適切なものを選べ。",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "A 社は，放送会社や運輸会社向けに広告制作ビジネスを展開している。A 社は，人事業務の効率化を図るべく，人事業務の委託を検討することにした。A 社が委託する業務（以下，B 業務という）を図1 に示す。"
+   },
+   {
+    "type": "image",
+    "src": "2023r05_b_06_1.png"
+   },
+   {
+    "type": "text",
+    "text": "図1 B 業務\n委託先候補のC 社は，B 業務について，次のようにA 社に提案した。\n・B 業務だけに従事する専任の従業員を割り当てる。\n・B 業務では，図2 の複合機のスキャン機能を使用する。"
+   },
+   {
+    "type": "image",
+    "src": "2023r05_b_06_2.png"
+   },
+   {
+    "type": "text",
+    "text": "注1) B サーバにアクセスする際は，従業員ごとの利用者ID とパスワードが必要になる。\n図2 複合機のスキャン機能（抜粋）\nA 社は，C 社と業務委託契約を締結する前に，秘密保持契約を締結した。その後，C社に質問表を送付し，回答を受けて，業務委託での情報セキュリティリスクの評価を実施した。その結果，図3 の発見があった。"
+   },
+   {
+    "type": "image",
+    "src": "2023r05_b_06_3.png"
+   },
+   {
+    "type": "text",
+    "text": "注1)  複合機の初期設定はC 社の情報システム部だけが変更可能である。\n図3 発見事項\nそこで，A 社では，初期設定の状態のままではA 社にとって情報セキュリティリスクがあり，初期設定から変更するという対策が必要であると評価した。\n設問 対策が必要であるとA 社が評価した情報セキュリティリスクはどれか。解答群のうち，最も適切なものを選べ。"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2023r05_b_06_choices.png",
+  "answerIndex": 0,
+  "source": "出典：令和5年度 基本情報技術者試験 公開問題 科目B 問6",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ }
+]

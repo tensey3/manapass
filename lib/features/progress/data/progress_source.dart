@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../data/repositories/question_repository.dart';
+import '../../../data/repositories/question_repository.dart' hide AnswerRecord;
 import '../../auth/providers/auth_controller.dart';
 import 'progress_models.dart';
 

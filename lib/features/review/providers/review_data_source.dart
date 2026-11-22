@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import '../../../data/repositories/question_repository.dart';
+
 class WrongQuestion {
   final String id;
   final String category; // カードバッジ表示用（例: 科目A・コンピュータシステム / 科目B）
@@ -77,11 +79,15 @@ class FirestoreReviewDataSource implements ReviewDataSource {
   FirestoreReviewDataSource({
     FirebaseFirestore? firestore,
     FirebaseAuth? auth,
+    QuestionRepository? questions,
   })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _auth = auth ?? FirebaseAuth.instance;
+        _auth = auth ?? FirebaseAuth.instance,
+        _questions = questions ?? QuestionRepository(firestore, auth);
 
   final FirebaseFirestore _firestore;
   final FirebaseAuth _auth;
+  // 問題はアプリの中のファイルから読む（解答の記録だけ Firestore）
+  final QuestionRepository _questions;
 
   List<String> _readStringList(Object? raw) {
     if (raw is List) {
@@ -189,23 +195,9 @@ class FirestoreReviewDataSource implements ReviewDataSource {
       ids.add(doc.id);
     }
 
-    final questionsById = <String, Map<String, dynamic>>{};
-    for (var start = 0; start < ids.length; start += 30) {
-      final batch = List<String>.from(ids.skip(start).take(30));
-      final qSnap = await _firestore
-          .collection('questions')
-          .where(FieldPath.documentId, whereIn: batch)
-          .get();
-
-      for (final doc in qSnap.docs) {
-        final raw = doc.data();
-        final map = <String, dynamic>{};
-        for (final entry in raw.entries) {
-          map[entry.key.toString()] = entry.value;
-        }
-        questionsById[doc.id] = map;
-      }
-    }
+    final questionsById = <String, Map<String, dynamic>>{
+      for (final q in await _questions.fetchQuestionsByIds(ids)) q.id.toString(): q.toMap(),
+    };
 
     final wrongList = <WrongQuestion>[];
     final totalsByArea = <String, int>{};

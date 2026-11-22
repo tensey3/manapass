@@ -1,0 +1,230 @@
+[
+ {
+  "id": "2026r08_b_01",
+  "exam": "2026r08_b",
+  "year": 2026,
+  "subject": "科目B",
+  "number": 1,
+  "question": "次のプログラム中の［　］ に入れる正しい答えを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n次のプログラムは，整数型の配列data の末尾の要素の値を先頭の要素に移動する。この際，末尾以外の各要素の値は，一つずつ後ろの要素に移動する。\n〔プログラム〕\n整数型の配列: data ← {1, 2, 3, 4, 5, 6, 7, 8, 9}\n整数型: top, i\n整数型: len ← dataの要素数\ntop ← data[len]\nfor (i を［　］ )\n  data[i] ← data[i － 1]\nendfor\ndata[1] ← top",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "次のプログラム中の［　］ に入れる正しい答えを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n次のプログラムは，整数型の配列data の末尾の要素の値を先頭の要素に移動する。この際，末尾以外の各要素の値は，一つずつ後ろの要素に移動する。\n〔プログラム〕"
+   },
+   {
+    "type": "code",
+    "text": "整数型の配列: data ← {1, 2, 3, 4, 5, 6, 7, 8, 9}\n整数型: top, i\n整数型: len ← dataの要素数\ntop ← data[len]\nfor (i を［　］ )\n  data[i] ← data[i － 1]\nendfor\ndata[1] ← top"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2026r08_b_01_choices.png",
+  "answerIndex": 3,
+  "source": "出典：令和8年度 基本情報技術者試験 公開問題 科目B 問1",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ },
+ {
+  "id": "2026r08_b_02",
+  "exam": "2026r08_b",
+  "year": 2026,
+  "subject": "科目B",
+  "number": 2,
+  "question": "次のプログラム中の［　］ に入れる正しい答えを，解答群の中から選べ。関数complement は，引数として渡された8 ビット型の値x について，x に加算すると00000000 になる値を返す。8 ビット型の加算は，値を符号なし2 進数とみなしたときの加算とし，桁あふれが発生したときのあふれた桁は無視する。演算子∧，∨，▽は，それぞれビット単位の論理積，論理和，排他的論理和を表す。\n〔プログラム〕\n○8ビット型: complement(8ビット型: x)\n  8ビット型: y\n  y ←［　］\n  y ← y ＋ 00000001\n  return y",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "次のプログラム中の［　］ に入れる正しい答えを，解答群の中から選べ。関数complement は，引数として渡された8 ビット型の値x について，x に加算すると00000000 になる値を返す。8 ビット型の加算は，値を符号なし2 進数とみなしたときの加算とし，桁あふれが発生したときのあふれた桁は無視する。演算子∧，∨，▽は，それぞれビット単位の論理積，論理和，排他的論理和を表す。\n〔プログラム〕"
+   },
+   {
+    "type": "code",
+    "text": "○8ビット型: complement(8ビット型: x)\n  8ビット型: y\n  y ←［　］\n  y ← y ＋ 00000001\n  return y"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2026r08_b_02_choices.png",
+  "answerIndex": 5,
+  "source": "出典：令和8年度 基本情報技術者試験 公開問題 科目B 問2",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ },
+ {
+  "id": "2026r08_b_03",
+  "exam": "2026r08_b",
+  "year": 2026,
+  "subject": "科目B",
+  "number": 3,
+  "question": "次のプログラム中の［　］ に入れる正しい答えを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n関数func1 に与える引数と，関数func2 に与える引数とが同じとき，二つの関数は同じ値を返す。プログラムでは，配列の領域外を参照してはならないものとする。〔プログラム〕\n○整数型: func1(整数型: n)\n  if (nが2以下)\n    return 1\n  endif\n  return 2 × func1(n － 2) ＋ func1(n － 1)\n○整数型: func2(整数型: n)\n  整数型の配列: data ← {1, 1, 1}\n  整数型: i\n  /* nが3より小さいときは繰返し処理を実行しない */\n  for (iを3からnまで1ずつ増やす)\n    data[1] ← data[2]\n    data[2] ← data[3]\n    data[3] ←［　］\n  endfor\n  return data[3]",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "次のプログラム中の［　］ に入れる正しい答えを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n関数func1 に与える引数と，関数func2 に与える引数とが同じとき，二つの関数は同じ値を返す。プログラムでは，配列の領域外を参照してはならないものとする。〔プログラム〕"
+   },
+   {
+    "type": "code",
+    "text": "○整数型: func1(整数型: n)\n  if (nが2以下)\n    return 1\n  endif\n  return 2 × func1(n － 2) ＋ func1(n － 1)\n○整数型: func2(整数型: n)\n  整数型の配列: data ← {1, 1, 1}\n  整数型: i\n  /* nが3より小さいときは繰返し処理を実行しない */\n  for (iを3からnまで1ずつ増やす)\n    data[1] ← data[2]\n    data[2] ← data[3]\n    data[3] ←［　］\n  endfor\n  return data[3]"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2026r08_b_03_choices.png",
+  "answerIndex": 0,
+  "source": "出典：令和8年度 基本情報技術者試験 公開問題 科目B 問3",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ },
+ {
+  "id": "2026r08_b_04",
+  "exam": "2026r08_b",
+  "year": 2026,
+  "subject": "科目B",
+  "number": 4,
+  "question": "次のプログラム中の ［a］ と ［b］ に入れる正しい答えの組合せを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n単方向リストを，配列dataList と配列pointerList の二つの配列で表現する。dataList にリストの要素の値を格納し，pointerList にリストの次の要素に対応するdataList の要素番号を格納する。単方向リストの先頭は，dataList[1] 及びpointerList[1] の組みである。単方向リストの末尾に対応するpointerList の要素は未定義である。dataList のうち単方向リストの要素の値を格納していない要素と，対応するpointerList の要素は未定義である。\nプログラムが扱うdataList 及びpointerList の内容を図1 に示す。先頭の次の要素の要素番号は，pointerList[1] に格納された3 であり，値はdataList[3] に格納された20 である。その次の要素の要素番号はpointerList[3] に格納された2 であり，値はdataList[2] に格納された30 である。\n要素番号 1 2 3 4 5\ndataList\n要素番号 1 2 3 4 5\npointerList\n注記 網掛けはその要素が未定義であることを示す。\n図1 dataList 及びpointerList の内容\n関数orderList は，図1 のdataList 及びpointerList で表現した単方向リストの値を，単方向リストの先頭からたどって順番に格納した配列を返す。関数orderListが返す配列を図2 に示す。\n要素番号 1 2 3 4\n図2 関数orderList が返す配列\n〔プログラム〕\n大域: 整数型の配列: dataList ← {10, 30, 20, 40, 未定義の値}\n大域: 整数型の配列: pointerList ← {3, 4, 2, 未定義の値, 未定義の値}\n○整数型の配列: orderList()\n  整数型: i, p ← 1\n  整数型の配列: linearList ← {}  // 要素数0の配列\n  for (i を 1 から dataListの要素数 まで 1 ずつ増やす)\n    linearListの末尾 に dataList[p]の値 を追加する\n    if ( ［a］ が 未定義)\n      繰返し処理を終了する\n    endif\n    p ← ［b］\n  endfor\n  return linearList",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "次のプログラム中の ［a］ と ［b］ に入れる正しい答えの組合せを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n単方向リストを，配列dataList と配列pointerList の二つの配列で表現する。dataList にリストの要素の値を格納し，pointerList にリストの次の要素に対応するdataList の要素番号を格納する。単方向リストの先頭は，dataList[1] 及びpointerList[1] の組みである。単方向リストの末尾に対応するpointerList の要素は未定義である。dataList のうち単方向リストの要素の値を格納していない要素と，対応するpointerList の要素は未定義である。\nプログラムが扱うdataList 及びpointerList の内容を図1 に示す。先頭の次の要素の要素番号は，pointerList[1] に格納された3 であり，値はdataList[3] に格納された20 である。その次の要素の要素番号はpointerList[3] に格納された2 であり，値はdataList[2] に格納された30 である。\n要素番号 1 2 3 4 5"
+   },
+   {
+    "type": "image",
+    "src": "2026r08_b_04_1.png"
+   },
+   {
+    "type": "text",
+    "text": "dataList\n要素番号 1 2 3 4 5"
+   },
+   {
+    "type": "image",
+    "src": "2026r08_b_04_2.png"
+   },
+   {
+    "type": "text",
+    "text": "pointerList\n注記 網掛けはその要素が未定義であることを示す。\n図1 dataList 及びpointerList の内容\n関数orderList は，図1 のdataList 及びpointerList で表現した単方向リストの値を，単方向リストの先頭からたどって順番に格納した配列を返す。関数orderListが返す配列を図2 に示す。\n要素番号 1 2 3 4"
+   },
+   {
+    "type": "image",
+    "src": "2026r08_b_04_3.png"
+   },
+   {
+    "type": "text",
+    "text": "図2 関数orderList が返す配列\n〔プログラム〕"
+   },
+   {
+    "type": "code",
+    "text": "大域: 整数型の配列: dataList ← {10, 30, 20, 40, 未定義の値}\n大域: 整数型の配列: pointerList ← {3, 4, 2, 未定義の値, 未定義の値}\n○整数型の配列: orderList()\n  整数型: i, p ← 1\n  整数型の配列: linearList ← {}  // 要素数0の配列\n  for (i を 1 から dataListの要素数 まで 1 ずつ増やす)\n    linearListの末尾 に dataList[p]の値 を追加する\n    if ( ［a］ が 未定義)\n      繰返し処理を終了する\n    endif\n    p ← ［b］\n  endfor\n  return linearList"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2026r08_b_04_choices.png",
+  "answerIndex": 3,
+  "source": "出典：令和8年度 基本情報技術者試験 公開問題 科目B 問4",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ },
+ {
+  "id": "2026r08_b_05",
+  "exam": "2026r08_b",
+  "year": 2026,
+  "subject": "科目B",
+  "number": 5,
+  "question": "次のプログラム中の ［a］ と ［b］ に入れる正しい答えの組合せを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n一つの要素だけが1 で他の要素が0 であるような整数型の配列による表現を，本問ではOne-Hot 表現という。関数oneHotEncoding は，図のように，色の名前が格納されている要素数1 以上の文字列型の配列を引数として受け取り，配列に含まれる色の名前（図の例では3 種類）に基づいて，各要素をOne-Hot 表現に変換し，整数型配列の配列に格納して返す。関数oneHotEncoding における変換の例を図に示す。\n引数の例： {\"Red\", \"Green\", \"Blue\", \"Red\"}\n↓\n\"Red\"のOne-Hot 表現  ： {1, 0, 0}\n\"Green\"のOne-Hot 表現： {0, 1, 0}\n\"Blue\"のOne-Hot 表現 ： {0, 0, 1}\n↓\n引数の例に対応する戻り値： {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 0}}\n図 関数oneHotEncoding における変換の例\n〔プログラム〕\n○整数型配列の配列: oneHotEncoding(文字列型の配列: colors)\n  整数型: i, j, k\n  文字列型の配列: colorVector ← {}  // 要素数0の配列\n  整数型の配列: tempVector\n  整数型配列の配列: oneHotVector ← {}  // 要素数0の配列\n  /* 名前一覧の作成 */\n  for (i を 1 から colorsの要素数 まで 1 ずつ増やす)\n    if (colorVector の要素のいずれにも colors[i]の値 が格納されていない)\n      colorVectorの末尾 に ［a］ を追加する\n    endif\n  endfor\n  /* One-Hot表現への変換 */\n  for (j を 1 から colorsの要素数 まで 1 ずつ増やす)\n    tempVector ← {}  // 要素数0の配列\n    for (k を 1 から colorVectorの要素数 まで 1 ずつ増やす)\n      if ( ［b］ )\n        tempVectorの末尾 に 1 を追加する\n      else\n        tempVectorの末尾 に 0 を追加する\n      endif\n    endfor\n    oneHotVectorの末尾 に tempVector を追加する\n  endfor\n  return oneHotVector",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "次のプログラム中の ［a］ と ［b］ に入れる正しい答えの組合せを，解答群の中から選べ。ここで，配列の要素番号は1 から始まる。\n一つの要素だけが1 で他の要素が0 であるような整数型の配列による表現を，本問ではOne-Hot 表現という。関数oneHotEncoding は，図のように，色の名前が格納されている要素数1 以上の文字列型の配列を引数として受け取り，配列に含まれる色の名前（図の例では3 種類）に基づいて，各要素をOne-Hot 表現に変換し，整数型配列の配列に格納して返す。関数oneHotEncoding における変換の例を図に示す。\n引数の例： {\"Red\", \"Green\", \"Blue\", \"Red\"}\n↓\n\"Red\"のOne-Hot 表現  ： {1, 0, 0}\n\"Green\"のOne-Hot 表現： {0, 1, 0}\n\"Blue\"のOne-Hot 表現 ： {0, 0, 1}\n↓\n引数の例に対応する戻り値： {{1, 0, 0}, {0, 1, 0}, {0, 0, 1}, {1, 0, 0}}\n図 関数oneHotEncoding における変換の例\n〔プログラム〕"
+   },
+   {
+    "type": "code",
+    "text": "○整数型配列の配列: oneHotEncoding(文字列型の配列: colors)\n  整数型: i, j, k\n  文字列型の配列: colorVector ← {}  // 要素数0の配列\n  整数型の配列: tempVector\n  整数型配列の配列: oneHotVector ← {}  // 要素数0の配列\n  /* 名前一覧の作成 */\n  for (i を 1 から colorsの要素数 まで 1 ずつ増やす)\n    if (colorVector の要素のいずれにも colors[i]の値 が格納されていない)\n      colorVectorの末尾 に ［a］ を追加する\n    endif\n  endfor\n  /* One-Hot表現への変換 */\n  for (j を 1 から colorsの要素数 まで 1 ずつ増やす)\n    tempVector ← {}  // 要素数0の配列\n    for (k を 1 から colorVectorの要素数 まで 1 ずつ増やす)\n      if ( ［b］ )\n        tempVectorの末尾 に 1 を追加する\n      else\n        tempVectorの末尾 に 0 を追加する\n      endif\n    endfor\n    oneHotVectorの末尾 に tempVector を追加する\n  endfor\n  return oneHotVector"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2026r08_b_05_choices.png",
+  "answerIndex": 1,
+  "source": "出典：令和8年度 基本情報技術者試験 公開問題 科目B 問5",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ },
+ {
+  "id": "2026r08_b_06",
+  "exam": "2026r08_b",
+  "year": 2026,
+  "subject": "科目B",
+  "number": 6,
+  "question": "A 社は，従業員1,000 名の広告代理店である。A 社では，各部署がA 社の社内ネットワークに設置したファイルサーバを，設置した部署の運用担当者が管理している。各部署で新たなクラウドサービスを利用する場合，各部署の責任者の承認のもと契約し，各部署の運用担当者が管理している。\n営業部では，営業部がA 社の社内ネットワークに設置したファイルサーバ（以下，Y サーバという）及び顧客管理のためのクラウドサービス（以下，Z サービスという）を利用している。営業部の各従業員にはY サーバの一般利用者アカウントが割り当てられ，Y サーバ上の全てのファイルが編集可能である。また，営業部の各従業員には，Z サービスの一般利用者アカウントが割り当てられ，営業部の運用担当者には，Y サーバとZ サービスの管理者アカウントが割り当てられている。\n情報セキュリティ部門では，クラウドサービスに関連した情報セキュリティインシデントの発生に備えて，各部署で利用しているクラウドサービスのログ管理に関するルールを図1 のとおりに整備した。\n図1 各部署で利用しているクラウドサービスのログ管理に関するルール\n営業部の情報セキュリティリーダーであるB 課長は，運用担当者のC 主任及び情報セキュリティ部門の協力を得て，図1 のルールが順守されているかどうかを調査した。B 課長は，Z サービスでの現在の運用の中で，図1 のルールに違反しているものを表1のとおりまとめた。\n表1 図1 のルールに違反している現在の運用\n設問 表1 中の運用のうち，図1 のルール3 に違反しているものの項番だけを全て挙げた組合せを，解答群の中から選べ。",
+  "blocks": [
+   {
+    "type": "text",
+    "text": "A 社は，従業員1,000 名の広告代理店である。A 社では，各部署がA 社の社内ネットワークに設置したファイルサーバを，設置した部署の運用担当者が管理している。各部署で新たなクラウドサービスを利用する場合，各部署の責任者の承認のもと契約し，各部署の運用担当者が管理している。\n営業部では，営業部がA 社の社内ネットワークに設置したファイルサーバ（以下，Y サーバという）及び顧客管理のためのクラウドサービス（以下，Z サービスという）を利用している。営業部の各従業員にはY サーバの一般利用者アカウントが割り当てられ，Y サーバ上の全てのファイルが編集可能である。また，営業部の各従業員には，Z サービスの一般利用者アカウントが割り当てられ，営業部の運用担当者には，Y サーバとZ サービスの管理者アカウントが割り当てられている。\n情報セキュリティ部門では，クラウドサービスに関連した情報セキュリティインシデントの発生に備えて，各部署で利用しているクラウドサービスのログ管理に関するルールを図1 のとおりに整備した。"
+   },
+   {
+    "type": "image",
+    "src": "2026r08_b_06_1.png"
+   },
+   {
+    "type": "text",
+    "text": "図1 各部署で利用しているクラウドサービスのログ管理に関するルール\n営業部の情報セキュリティリーダーであるB 課長は，運用担当者のC 主任及び情報セキュリティ部門の協力を得て，図1 のルールが順守されているかどうかを調査した。B 課長は，Z サービスでの現在の運用の中で，図1 のルールに違反しているものを表1のとおりまとめた。\n表1 図1 のルールに違反している現在の運用"
+   },
+   {
+    "type": "image",
+    "src": "2026r08_b_06_2.png"
+   },
+   {
+    "type": "text",
+    "text": "設問 表1 中の運用のうち，図1 のルール3 に違反しているものの項番だけを全て挙げた組合せを，解答群の中から選べ。"
+   }
+  ],
+  "choices": [
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   "",
+   ""
+  ],
+  "choicesImage": "2026r08_b_06_choices.png",
+  "answerIndex": 8,
+  "source": "出典：令和8年度 基本情報技術者試験 公開問題 科目B 問6",
+  "category": "",
+  "topic": "",
+  "explanation": ""
+ }
+]

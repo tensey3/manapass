@@ -24,26 +24,59 @@ void main() {
       expect(Question.fromMap({'answer': '?'}).answerIndex, 0);
     });
 
-    test('本物の過去問データ：正解の選択肢の記号が、answer と一致する', () {
-      final files = Directory('assets/questions')
-          .listSync()
-          .whereType<File>()
-          .where((f) => f.path.endsWith('.json'));
-      var checked = 0;
-      for (final file in files) {
-        final list = jsonDecode(file.readAsStringSync()) as List;
+  });
+
+  group('アプリに入っている問題データ（assets/questions）', () {
+    final index = jsonDecode(File('assets/questions/index.json').readAsStringSync()) as Map<String, dynamic>;
+    final exams = (index['exams'] as List).cast<Map<String, dynamic>>();
+
+    test('一覧にある試験のファイルが全部あり、問題数が一覧と同じ', () {
+      expect(exams, isNotEmpty);
+      for (final exam in exams) {
+        final list = jsonDecode(File('assets/questions/${exam['file']}').readAsStringSync()) as List;
+        expect(list.length, exam['count'], reason: '${exam['id']}');
+      }
+    });
+
+    test('どの問題も、正解が解答群の中にあり、ID が重ならず、出典がある', () {
+      final ids = <String>{};
+      var count = 0;
+      for (final exam in exams) {
+        final list = jsonDecode(File('assets/questions/${exam['file']}').readAsStringSync()) as List;
         for (final raw in list.cast<Map<String, dynamic>>()) {
           final q = Question.fromMap(raw);
-          expect(q.answerIndex, inInclusiveRange(0, q.choices.length - 1), reason: '${raw['id']}');
-          final answer = raw['answer'];
-          if (answer is String) {
-            expect(q.choices[q.answerIndex].trim().startsWith(answer.trim()), isTrue,
-                reason: '${raw['id']}: 正解 $answer → ${q.choices[q.answerIndex]}');
-            checked++;
+          final id = q.id.toString();
+          expect(ids.add(id), isTrue, reason: '$id が重なっている');
+          expect(q.exam, exam['id'], reason: id);
+          expect(q.subject, exam['subject'], reason: id);
+          expect(q.answerIndex, inInclusiveRange(0, q.choices.length - 1), reason: id);
+          expect(q.source, startsWith('出典：'), reason: id);
+          expect(q.blocks, isNotEmpty, reason: id);
+          // 解答群が画像でなければ、選択肢の文字が全部ある
+          if (q.choicesImage == null) {
+            expect(q.choices.every((c) => c.trim().isNotEmpty), isTrue, reason: id);
+          }
+          count++;
+        }
+      }
+      expect(count, greaterThan(100));
+    });
+
+    test('問題の図・解答群の画像が全部ある', () {
+      for (final exam in exams) {
+        final list = jsonDecode(File('assets/questions/${exam['file']}').readAsStringSync()) as List;
+        for (final raw in list.cast<Map<String, dynamic>>()) {
+          final q = Question.fromMap(raw);
+          final paths = [
+            for (final b in q.blocks)
+              if (b.isImage) b.assetPath!,
+            if (q.choicesImagePath != null) q.choicesImagePath!,
+          ];
+          for (final p in paths) {
+            expect(File(p).existsSync(), isTrue, reason: '${q.id}: $p がない');
           }
         }
       }
-      expect(checked, greaterThan(0));
     });
   });
 }
