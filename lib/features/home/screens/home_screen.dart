@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../app/router/routes.dart';
+import '../../../data/repositories/question_repository.dart';
+import '../../quiz/screens/question_answer_screen.dart';
 import '../providers/home_controller.dart';
+import '../providers/home_data_source.dart';
 import '../widgets/continue_button.dart';
 import '../widgets/countdown_card.dart';
 import '../widgets/goal_progress_chart.dart';
@@ -61,7 +64,7 @@ class HomeScreen extends ConsumerWidget {
                       const SizedBox(height: 32),
                       ContinueButton(
                         width: wide ? _rowWidth : double.infinity,
-                        onPressed: () => context.go(Routes.question),
+                        onPressed: () => _continue(context, ref, data),
                       ),
                     ],
                   ),
@@ -70,5 +73,29 @@ class HomeScreen extends ConsumerWidget {
             },
           ),
         );
+  }
+
+  /// 「続きから」：最後に解いた問題の次の問題を開く。
+  /// まだ何も解いていない・その回を最後まで解いた・問題が見つからないときは、問題画面へ。
+  Future<void> _continue(BuildContext context, WidgetRef ref, HomeData data) async {
+    final repo = ref.read(questionRepositoryProvider);
+    final lastId = data.lastQuestionId;
+    final last = lastId == null ? null : (await repo.fetchQuestionsByIds([lastId])).firstOrNull;
+    final examId = last?.exam;
+    if (!context.mounted) return;
+    if (examId == null) {
+      context.go(Routes.question);
+      return;
+    }
+    final exams = await repo.getExams();
+    final questions = await repo.getQuestionsByExam(examId);
+    final exam = exams.where((e) => e.id == examId).firstOrNull;
+    final start = questions.indexWhere((q) => q.id.toString() == lastId) + 1;
+    if (!context.mounted) return;
+    if (exam == null || start <= 0 || start >= questions.length) {
+      context.go(Routes.question);
+      return;
+    }
+    await openQuiz(context, ref, title: '${exam.title} ${exam.subject}', questions: questions, startIndex: start);
   }
 }

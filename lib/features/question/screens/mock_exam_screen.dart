@@ -1,15 +1,53 @@
-import 'package:flutter/material.dart';
+import 'dart:math';
 
-class MockExamScreen extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../data/repositories/question_repository.dart';
+import '../../quiz/screens/mock_exam_screen.dart';
+import '../../quiz/screens/question_answer_screen.dart';
+
+/// 模擬試験の設定（科目を選んで開始）。
+/// 本番の時間配分に合わせる：科目A は 60問90分（1問1.5分）、科目B は 20問100分（1問5分）。
+class MockExamScreen extends ConsumerStatefulWidget {
   const MockExamScreen({super.key});
 
   @override
-  State<MockExamScreen> createState() => _MockExamScreenState();
+  ConsumerState<MockExamScreen> createState() => _MockExamScreenState();
 }
 
-class _MockExamScreenState extends State<MockExamScreen> {
+class _MockExamScreenState extends ConsumerState<MockExamScreen> {
   // 選択状態を管理する変数 (0: 科目A, 1: 科目B)
   int _selectedSubjectIndex = 0;
+  bool _starting = false;
+
+  static const _countA = 20;
+  static const _countB = 6;
+  static const _minutesA = 30; // 20問 × 1.5分
+  static const _minutesB = 30; // 6問 × 5分
+
+  Future<void> _start(bool isSubjectA) async {
+    setState(() => _starting = true);
+    try {
+      final subject = isSubjectA ? '科目A' : '科目B';
+      final all = await ref.read(questionRepositoryProvider).getAllQuestions();
+      final pool = all.where((q) => q.subject == subject).toList()..shuffle(Random());
+      final questions = pool.take(isSubjectA ? _countA : _countB).toList();
+      if (!mounted || questions.isEmpty) return;
+      await Navigator.of(context, rootNavigator: true).push(
+        MaterialPageRoute<void>(
+          builder: (_) => MockExamSessionScreen(
+            title: '模擬試験 $subject',
+            questions: questions,
+            timeLimit: Duration(minutes: isSubjectA ? _minutesA : _minutesB),
+          ),
+        ),
+      );
+      refreshAnswerCounts(ref);
+    } finally {
+      if (mounted) setState(() => _starting = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,7 +143,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                     icon: Icons.list_alt,
                     title: '問題数',
                     subtitle: isSubjectA ? '本番は60問・90分' : '本番は20問・100分',
-                    trailing: isSubjectA ? '10問' : '0問',
+                    trailing: isSubjectA ? '$_countA問' : '$_countB問',
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   // 制限時間
@@ -113,7 +151,7 @@ class _MockExamScreenState extends State<MockExamScreen> {
                     icon: Icons.timer_outlined,
                     title: '制限時間',
                     subtitle: '',
-                    trailing: isSubjectA ? '15分' : '0分',
+                    trailing: isSubjectA ? '$_minutesA分' : '$_minutesB分',
                   ),
                   const Divider(height: 1, indent: 16, endIndent: 16),
                   // 合格の目安
@@ -127,18 +165,6 @@ class _MockExamScreenState extends State<MockExamScreen> {
               ),
             ),
             const SizedBox(height: 16),
-
-            // 科目Bが選択されている場合の「準備中」メッセージ
-            if (!isSubjectA)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 8.0),
-                  child: Text(
-                    '科目Bの模試は準備中です',
-                    style: TextStyle(color: Colors.grey, fontSize: 13),
-                  ),
-                ),
-              ),
 
             const SizedBox(height: 8),
 
@@ -157,18 +183,14 @@ class _MockExamScreenState extends State<MockExamScreen> {
               height: 48,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isSubjectA ? Colors.blue : Colors.grey[300],
-                  foregroundColor: isSubjectA ? Colors.white : Colors.grey[600],
+                  backgroundColor: Colors.blue,
+                  foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
                   elevation: 0,
                 ),
-                onPressed: isSubjectA
-                    ? () {
-                  // 科目Aの模試開始処理
-                }
-                    : null, // 科目Bが準備中の場合はボタンを無効化
+                onPressed: _starting ? null : () => _start(isSubjectA),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [

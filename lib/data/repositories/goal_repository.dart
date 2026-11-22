@@ -6,7 +6,6 @@ import '../models/exam_goal.dart';
 abstract interface class GoalRepository {
   Future<ExamGoal> fetchGoal();
   Future<void> saveGoal(ExamGoal goal);
-  Future<int> fetchTodayAnswered();
 }
 
 class InMemoryGoalRepository implements GoalRepository {
@@ -35,9 +34,6 @@ class InMemoryGoalRepository implements GoalRepository {
     await prefs.setString(_examDateKey, goal.examDate.toIso8601String());
     await prefs.setInt(_dailyTargetKey, goal.dailyTarget);
   }
-
-  @override
-  Future<int> fetchTodayAnswered() async => 5;
 }
 
 final goalRepositoryProvider = Provider<GoalRepository>(

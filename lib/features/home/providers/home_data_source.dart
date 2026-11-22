@@ -8,12 +8,16 @@ class HomeData {
   final int dailyGoal;
   final int totalQuestions;
 
+  /// 最後に解いた問題の ID（「続きから」で、この次の問題を開く）。まだ解いていなければ null。
+  final String? lastQuestionId;
+
   const HomeData({
     this.examName,
     this.examDate,
     required this.todayAnswered,
     required this.dailyGoal,
     this.totalQuestions = 0,
+    this.lastQuestionId,
   });
 
   /// 試験日までの日数（日付単位。当日と試験日が過ぎたあとは0）。未設定なら null。

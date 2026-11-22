@@ -1,29 +1,26 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../data/models/question.dart';
 import '../../../data/repositories/question_repository.dart';
 
-// リポジトリのプロバイダー
-final questionRepositoryProvider = Provider((ref) => QuestionRepository());
-
-// 現在選択されているタブ（例: '科目A' または '科目B'）を管理する Provider
+/// 問題一覧のタブ（科目A / 科目B）
 final selectedSubjectProvider = StateProvider<String>((ref) => '科目A');
 
-// ==========================================
-// 追加・拡張部分
-// ==========================================
+/// アプリに入っている試験の一覧（新しい年が上）
+final examsProvider = FutureProvider<List<ExamInfo>>(
+  (ref) => ref.watch(questionRepositoryProvider).getExams(),
+);
 
-// 1. 指定した年度と科目に対応する問題リストを非同期で取得する Provider (Family)
-// 例: ref.watch(questionsProvider((year: 2026, subject: '科目A'))) のように呼び出せます
-final questionsProvider = FutureProvider.family<List<Question>, ({int year, String subject})>((ref, arg) async {
-  final repository = ref.watch(questionRepositoryProvider);
-  return await repository.getQuestionsByYearAndSubject(arg.year, arg.subject);
-});
+/// 1回分の試験の問題
+final examQuestionsProvider = FutureProvider.family<List<Question>, String>(
+  (ref, examId) => ref.watch(questionRepositoryProvider).getQuestionsByExam(examId),
+);
 
-// 2. 指定した年度・科目の総問題数を取得する Provider
-final questionCountProvider = FutureProvider.family<int, ({int year, String subject})>((ref, arg) async {
-  final repository = ref.watch(questionRepositoryProvider);
-  return await repository.getQuestionCount(arg.year, arg.subject);
-});
+/// 自分の解答の記録（問題ID → 記録）。問題を解き終わったら invalidate して読み直す。
+final answerRecordsProvider = FutureProvider<Map<String, AnswerRecord>>(
+  (ref) => ref.watch(questionRepositoryProvider).fetchAnswerRecords(),
+);
 
-// 3. （オプション）ユーザーの解答進捗（例: 「何問中何問正解したか」や「完了したか」）を管理するステートやプロバイダー
-// 必要に応じて AnswerRepository などをここに組み込んでいきます
+/// その試験で、1回以上解いた問題の数
+int solvedCount(String examId, Map<String, AnswerRecord> records) =>
+    records.keys.where((id) => id.startsWith('${examId}_')).length;

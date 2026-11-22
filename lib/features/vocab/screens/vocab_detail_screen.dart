@@ -105,18 +105,6 @@ class _VocabDetailScreenState extends ConsumerState<VocabDetailScreen> {
                   isSaved: detail.isSaved,
                   onPressed: () => ref.read(wordbookProvider.notifier).toggle(word.text),
                 ),
-                const SizedBox(height: 8),
-                Center(
-                  child: TextButton(
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('意味の誤りの報告は、準備中です')),
-                    ),
-                    child: const Text(
-                      '意味の誤りを報告',
-                      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: VocabStyle.muted),
-                    ),
-                  ),
-                ),
               ],
             );
           },

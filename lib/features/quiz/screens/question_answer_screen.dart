@@ -1,38 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../../core/theme/app_theme.dart';
 import '../../../data/models/question.dart';
 import '../../../data/repositories/question_repository.dart';
+import '../../home/providers/home_controller.dart';
+import '../../question/providers/question_list_controller.dart';
+import '../widgets/judge_banner.dart';
+import '../widgets/option_button.dart';
+import '../widgets/question_body.dart';
+import 'quiz_result_screen.dart';
 
-// 該当年度・科目の問題リストを取得するProvider
-final questionsProvider = FutureProvider.family<List<Question>, ({int year, String subject})>((ref, arg) async {
-  final repository = ref.read(questionRepositoryProvider);
-  return await repository.getQuestionsByYearAndSubject(arg.year, arg.subject);
-});
+/// 問題を解く画面を、サイドメニューなしの全画面で開く。
+/// 閉じたら、問題一覧の「解いた数」とホームの数字を読み直す。
+Future<void> openQuiz(
+  BuildContext context,
+  WidgetRef ref, {
+  required String title,
+  required List<Question> questions,
+  int startIndex = 0,
+}) async {
+  if (questions.isEmpty) return;
+  await Navigator.of(context, rootNavigator: true).push(
+    MaterialPageRoute<void>(
+      builder: (_) => QuestionAnswerScreen(title: title, questions: questions, startIndex: startIndex),
+    ),
+  );
+  refreshAnswerCounts(ref);
+}
 
+/// 解答の記録が増えたので、それを使っている画面の数字を読み直す。
+void refreshAnswerCounts(WidgetRef ref) {
+  ref.invalidate(answerRecordsProvider);
+  ref.invalidate(homeProvider);
+}
+
+/// 1問ずつ解く：選ぶ → 解答する → 正解/不正解 → 次へ。最後まで行くと結果画面。
 class QuestionAnswerScreen extends ConsumerStatefulWidget {
-  final int year;
-  final String subject;
+  const QuestionAnswerScreen({super.key, required this.title, required this.questions, this.startIndex = 0});
 
-  const QuestionAnswerScreen({
-    super.key,
-    required this.year,
-    required this.subject,
-  });
+  final String title;
+  final List<Question> questions;
+  final int startIndex;
 
   @override
   ConsumerState<QuestionAnswerScreen> createState() => _QuestionAnswerScreenState();
 }
 
 class _QuestionAnswerScreenState extends ConsumerState<QuestionAnswerScreen> {
-  int currentIndex = 0;
-  int? selectedOptionIndex; // ユーザーが選択した選択肢のインデックス
-  bool isAnswered = false;    // 解答ボタンが押されて答え合わせが終わったか
+  final _scroll = ScrollController();
+  final _results = <int, bool>{}; // 問題の番号（何問目か） → 正解したか
+  late int _index = widget.startIndex.clamp(0, widget.questions.length - 1);
+  int? _selected;
+  bool _answered = false;
 
-  /// 解答を記録する（進捗画面・復習画面がこの記録を使う）。
-  /// 記録できなくても答え合わせは続けられるように、失敗はお知らせだけ出す。
-  Future<void> _recordAnswer(Question question, int selectedIndex) async {
+  Question get _q => widget.questions[_index];
+  bool get _correct => _selected == _q.answerIndex;
+  bool get _isLast => _index == widget.questions.length - 1;
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    final selected = _selected;
+    if (selected == null) return;
+    setState(() {
+      _answered = true;
+      _results[_index] = selected == _q.answerIndex;
+    });
+    _record(_q, selected);
+  }
+
+  /// 解答を記録する（進捗・復習・問題一覧・ホームがこの記録を使う）。
+  /// 記録できなくても続けられるように、失敗はお知らせだけ出す。
+  Future<void> _record(Question question, int selected) async {
     try {
-      await ref.read(questionRepositoryProvider).recordAnswer(question, selectedIndex);
+      await ref.read(questionRepositoryProvider).recordAnswer(question, selected);
     } catch (_) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -41,204 +87,128 @@ class _QuestionAnswerScreenState extends ConsumerState<QuestionAnswerScreen> {
     }
   }
 
+  void _next() {
+    if (_isLast) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(
+          builder: (_) => QuizResultScreen(
+            title: widget.title,
+            questions: [for (final i in _results.keys) widget.questions[i]],
+            correct: _results.values.toList(),
+          ),
+        ),
+      );
+      return;
+    }
+    setState(() {
+      _index++;
+      _selected = null;
+      _answered = false;
+    });
+    _scroll.jumpTo(0);
+  }
+
+  ChoiceState _stateOf(int i) {
+    if (!_answered) return i == _selected ? ChoiceState.selected : ChoiceState.idle;
+    if (i == _q.answerIndex) return ChoiceState.correct;
+    if (i == _selected) return ChoiceState.wrong;
+    return ChoiceState.dimmed;
+  }
+
   @override
   Widget build(BuildContext context) {
-    // データベースから問題リストを非同期で取得（widget.year と widget.subject を使用）
-    final queryArg = (year: widget.year, subject: widget.subject);
-    final questionsAsync = ref.watch(questionsProvider(queryArg));
-
+    final total = widget.questions.length;
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black87),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
-        title: Text(
-          '${widget.year}年度 - ${widget.subject}',
-          style: const TextStyle(color: Colors.black87, fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: questionsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: Text('エラーが発生しました: $error', style: const TextStyle(color: Colors.red)),
-        ),
-        data: (questions) {
-          if (questions.isEmpty) {
-            return const Center(
-              child: Text(
-                'この条件に一致する問題がまだ登録されていません。',
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // 上：閉じる・タイトル・何問目か
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 6, 16, 0),
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    tooltip: '閉じる',
+                    icon: const Icon(Icons.close_rounded, color: AppColors.textMuted, size: 28),
+                  ),
+                  Expanded(
+                    child: Text(widget.title,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w800)),
+                  ),
+                  Text('${_index + 1} / $total',
+                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.textMuted)),
+                ],
               ),
-            );
-          }
-
-          final currentQuestion = questions[currentIndex];
-          final progress = (currentIndex + 1) / questions.length;
-
-          return Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // 進捗バー ＆ 問題番号
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${currentQuestion.category} ・ 問${currentIndex + 1}',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600], fontWeight: FontWeight.w500),
-                    ),
-                    Text(
-                      '${currentIndex + 1} / ${questions.length}',
-                      style: TextStyle(fontSize: 13, color: Colors.grey[600], fontWeight: FontWeight.w500),
-                    ),
-                  ],
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: (_index + (_answered ? 1 : 0)) / total,
+                  minHeight: 6,
+                  backgroundColor: AppColors.track,
+                  color: AppColors.primary,
                 ),
-                const SizedBox(height: 8),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    backgroundColor: Colors.grey[200],
-                    valueColor: const AlwaysStoppedAnimation<Color>(Colors.blue),
-                    minHeight: 6,
-                  ),
-                ),
-                const SizedBox(height: 24),
-
-                // 問題文 (questionText)
-                Text(
-                  currentQuestion.questionText,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, height: 1.5, color: Colors.black87),
-                ),
-                const SizedBox(height: 24),
-
-                // 選択肢一覧 (options)
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: currentQuestion.options.length,
-                    itemBuilder: (context, index) {
-                      final optionText = currentQuestion.options[index];
-                      final isSelected = selectedOptionIndex == index;
-
-                      // 選択肢のラベル（ア、イ、ウ、エ...）
-                      const labels = ['ア', 'イ', 'ウ', 'エ', 'オ'];
-                      final labelPrefix = index < labels.length ? '${labels[index]}. ' : '';
-
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: isSelected ? Colors.blue[50] : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isSelected ? Colors.blue : Colors.grey[300]!,
-                            width: isSelected ? 2 : 1,
-                          ),
-                        ),
-                        child: RadioListTile<int>(
-                          title: Text(
-                            '$labelPrefix$optionText',
-                            style: const TextStyle(fontSize: 15, color: Colors.black87),
-                          ),
-                          value: index,
-                          groupValue: selectedOptionIndex,
-                          onChanged: isAnswered
-                              ? null // 解答済みの場合は変更不可
-                              : (value) {
-                            setState(() {
-                              selectedOptionIndex = value;
-                            });
-                          },
-                          activeColor: Colors.blue,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-
-                // 解説表示（解答後に出す場合）
-                if (isAnswered) ...[
-                  Container(
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: selectedOptionIndex == currentQuestion.correctIndex ? Colors.green[50] : Colors.red[50],
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: selectedOptionIndex == currentQuestion.correctIndex ? Colors.green : Colors.red,
-                      ),
-                    ),
+              ),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scroll,
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 760),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
-                          selectedOptionIndex == currentQuestion.correctIndex ? '正解！' : '不正解...',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: selectedOptionIndex == currentQuestion.correctIndex ? Colors.green[700] : Colors.red[700],
-                          ),
-                        ),
+                        if (_q.number != null)
+                          Text('問${_q.number}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
                         const SizedBox(height: 4),
-                        Text(
-                          currentQuestion.explanation,
-                          style: const TextStyle(fontSize: 14, color: Colors.black87),
+                        QuestionBody(question: _q),
+                        const SizedBox(height: 8),
+                        ChoicesView(
+                          question: _q,
+                          stateOf: _stateOf,
+                          onSelect: _answered ? null : (i) => setState(() => _selected = i),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                ],
-
-                // 解答する / 次へ ボタン
-                SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blue,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    onPressed: selectedOptionIndex == null
-                        ? null
-                        : () {
-                      if (!isAnswered) {
-                        // 1回目のタップ：解答合わせ
-                        setState(() {
-                          isAnswered = true;
-                        });
-                        _recordAnswer(questions[currentIndex], selectedOptionIndex!);
-                      } else {
-                        // 2回目のタップ：次の問題へ進む（あるいは終了）
-                        if (currentIndex < questions.length - 1) {
-                          setState(() {
-                            currentIndex++;
-                            selectedOptionIndex = null;
-                            isAnswered = false;
-                          });
-                        } else {
-                          // 最後の問題が終わったら閉じる
-                          Navigator.of(context).pop();
-                        }
-                      }
-                    },
-                    child: Text(
-                      !isAnswered
-                          ? '解答する'
-                          : (currentIndex < questions.length - 1 ? '次の問題へ' : '終了する'),
-                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            if (!_answered)
+              Container(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                decoration: const BoxDecoration(border: Border(top: BorderSide(color: AppColors.track, width: 2))),
+                child: Center(
+                  child: SizedBox(
+                    width: 760,
+                    height: 50,
+                    child: FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                      ),
+                      onPressed: _selected == null ? null : _submit,
+                      child: const Text('解答する', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800)),
                     ),
                   ),
                 ),
-              ],
-            ),
-          );
-        },
+              )
+            else
+              JudgeBanner(
+                correct: _correct,
+                answerLabel: choiceLabel(_q.answerIndex),
+                nextLabel: _isLast ? '結果を見る' : '次へ',
+                onNext: _next,
+              ),
+          ],
+        ),
       ),
     );
   }
